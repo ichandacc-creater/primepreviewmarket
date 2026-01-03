@@ -205,3 +205,19 @@ body{
   z-index: 900;
 }
 .scrim[hidden] { display: none; }
+
+#logout {
+  margin-left: 1rem;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background: #007bff; /* modern blue */
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#logout:hover {
+  background: #0056b3;
+}
