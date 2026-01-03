@@ -52,7 +52,7 @@ const stanleyProducts = [
       { color:'Green', img:'assets/stanley-green.jpg' },
       { color:'Pink', img:'assets/stanley-pink.jpg' },
       { color:'purple', img:'assets/stanley-purple.jpg' },
-      { color:'Gray', img:'assets/stanley-.jpg' },
+      { color:'Gray', img:'assets/stanley-gray.jpg' },
     ]
   }
 ];
