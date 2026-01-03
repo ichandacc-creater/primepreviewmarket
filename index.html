@@ -1,16 +1,28 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  // Your Firebase config (same as auth.js)
   const firebaseConfig = {
-    apiKey: "AIzaSyCWezSfXRBRWyRMvoY88trhh8drG96n8AY",
-    authDomain: "prime-market.firebaseapp.com",
-    projectId: "prime-market",
-    storageBucket: "prime-market.firebasestorage.app",
-    messagingSenderId: "870687045642",
-    appId: "1:870687045642:web:d10c2313ab71971f5307f3",
-    measurementId: "G-EWLEJS331J"<button id="logout">Logout</button>
+    apiKey: "YOUR_API_KEY",
+    authDomain: "prime-preview-market.firebaseapp.com",
+    projectId: "prime-preview-market",
+    storageBucket: "prime-preview-market.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Redirect if not logged in
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "auth/auth.html";  // send to login page
+    }
+  });
+</script>
+
+      <button id="logout">Logout</button>
 
       
       <script type="module">
