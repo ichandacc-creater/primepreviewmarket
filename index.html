@@ -1,4 +1,38 @@
-<!doctype html>
+<button id="logout">Logout</button>
+<p id="logout-message"></p>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // Your Firebase config (same as auth.js)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCWezSfXRBRWyRMvoY88trhh8drG96n8AY",
+    authDomain: "prime-market.firebaseapp.com",
+    projectId: "prime-market",
+    storageBucket: "prime-market.firebasestorage.app",
+    messagingSenderId: "870687045642",
+    appId: "1:870687045642:web:d10c2313ab71971f5307f3",
+    measurementId: "G-EWLEJS331J"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Attach logout handler
+  document.getElementById("logout").addEventListener("click", () => {
+    signOut(auth)
+      .then(() => {
+        document.getElementById("logout-message").innerText = "Logged out successfully!";
+        window.location.href = "auth/auth.html"; // Redirect back to login
+      })
+      .catch((error) => {
+        document.getElementById("logout-message").innerText = error.message;
+      });
+  });
+</script>
+
+
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -8,6 +42,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
   <script src="app.js" defer></script>
+  
 </head>
 
 <!-- IMPORTANT: set category so app.js knows what to render -->
@@ -115,6 +150,7 @@
     </div>
     <div class="container footer-bottom">
       <small>© 2025 Prime Preview. All rights reserved.</small>
+      
     </div>
   </footer>
 </body>
