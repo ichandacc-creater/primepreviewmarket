@@ -1,0 +1,123 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Page */
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #0f2027; /* solid dark background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #fff;
+}
+
+/* Wrapper */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Card */
+.auth-card {
+  background: #111;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 360px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  text-align: center;
+}
+
+/* Logo */
+.logo {
+  width: 120px;
+  margin-bottom: 1rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: #ccc;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+}
+
+/* Forms */
+.form {
+  display: none;
+}
+
+.form.active {
+  display: block;
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #000;
+  color: #fff;
+  outline: none;
+}
+
+input:focus {
+  border-color: #007bff;
+}
+
+/* Buttons */
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #007bff;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+/* Links */
+a {
+  color: #00aaff;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Message */
+#auth-message {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #00ffcc;
+}
