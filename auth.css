@@ -1,14 +1,7 @@
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Page */
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #0f2027; /* solid dark background */
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #000; /* Black background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,7 +9,6 @@ body {
   color: #fff;
 }
 
-/* Wrapper */
 .auth-wrapper {
   display: flex;
   justify-content: center;
@@ -24,23 +16,20 @@ body {
   width: 100%;
 }
 
-/* Card */
 .auth-card {
   background: #111;
   border-radius: 12px;
   padding: 2rem;
-  width: 360px;
+  width: 350px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.6);
   text-align: center;
 }
 
-/* Logo */
 .logo {
   width: 120px;
   margin-bottom: 1rem;
 }
 
-/* Tabs */
 .tabs {
   display: flex;
   justify-content: space-around;
@@ -52,17 +41,15 @@ body {
   padding: 10px;
   border: none;
   background: transparent;
-  color: #ccc;
+  color: #fff;
   font-weight: bold;
   cursor: pointer;
 }
 
 .tabs button.active {
-  color: #007bff;
-  border-bottom: 2px solid #007bff;
+  border-bottom: 2px solid #007bff; /* Blue underline */
 }
 
-/* Forms */
 .form {
   display: none;
 }
@@ -71,7 +58,6 @@ body {
   display: block;
 }
 
-/* Inputs */
 input {
   width: 100%;
   padding: 12px;
@@ -83,18 +69,13 @@ input {
   outline: none;
 }
 
-input:focus {
-  border-color: #007bff;
-}
-
-/* Buttons */
 button {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
   border: none;
   border-radius: 8px;
-  background: #007bff;
+  background: #007bff; /* Blue button */
   color: #fff;
   font-weight: bold;
   cursor: pointer;
@@ -104,20 +85,8 @@ button:hover {
   background: #0056b3;
 }
 
-/* Links */
-a {
-  color: #00aaff;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* Message */
 #auth-message {
   margin-top: 1rem;
+  color: #fff;
   font-size: 0.9rem;
-  color: #00ffcc;
 }

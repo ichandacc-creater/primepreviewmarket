@@ -8,15 +8,15 @@ import {
 import { getFirestore, setDoc, doc } 
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Replace with your Firebase config
+// ✅ Firebase config
 const firebaseConfig = {
-    apiKey: "AIzaSyCWezSfXRBRWyRMvoY88trhh8drG96n8AY",
-    authDomain: "prime-market.firebaseapp.com",
-    projectId: "prime-market",
-    storageBucket: "prime-market.firebasestorage.app",
-    messagingSenderId: "870687045642",
-    appId: "1:870687045642:web:d10c2313ab71971f5307f3",
-    measurementId: "G-EWLEJS331J"
+  apiKey: "AIzaSyCWezSfXRBRWyRMvoY88trhh8drG96n8AY",
+  authDomain: "prime-market.firebaseapp.com",
+  projectId: "prime-market",
+  storageBucket: "prime-market.firebasestorage.app",
+  messagingSenderId: "870687045642",
+  appId: "1:870687045642:web:d10c2313ab71971f5307f3",
+  measurementId: "G-EWLEJS331J"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -24,6 +24,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 console.log("Firebase initialized:", app);
+
 // 🔹 Sign Up
 window.signUp = async function() {
   const firstname = document.getElementById("signup-firstname").value;
@@ -40,7 +41,6 @@ window.signUp = async function() {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Save extra details in Firestore
     await setDoc(doc(db, "users", user.uid), {
       firstname,
       surname,
@@ -52,13 +52,12 @@ window.signUp = async function() {
       email
     });
 
-    // ✅ Show success message
     document.getElementById("auth-message").innerText = 
       "Account successfully created! Redirecting to login...";
 
-    // ✅ Redirect back to login after 1 second
+    // ✅ Redirect back to login page (index.html) after 2 seconds
     setTimeout(() => {
-      window.location.href = "auth.html"; // adjust if your login page has a different filename
+      window.location.href = "index.html";
     }, 2000);
 
   } catch (error) {
@@ -66,12 +65,11 @@ window.signUp = async function() {
     if (error.code === "auth/email-already-in-use") {
       message = "This email is already registered. Please login instead.";
     } else if (error.code === "auth/weak-password") {
-      message = "Password is too weak. Please use at least 6 characters.";
+      message = "Password too weak. Use at least 6 characters.";
     }
     document.getElementById("auth-message").innerText = message;
   }
 };
-
 
 // 🔹 Login
 window.login = async function() {
@@ -80,8 +78,13 @@ window.login = async function() {
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    document.getElementById("auth-message").innerText = "Login successful!";
-    window.location.href = "../index.html"; // redirect to main app
+    document.getElementById("auth-message").innerText = "Login successful! Redirecting...";
+
+    // ✅ Redirect to index2.html after login
+    setTimeout(() => {
+      window.location.href = "index2.html";
+    }, 1500);
+
   } catch (error) {
     let message = error.message;
     if (error.code === "auth/wrong-password") {
@@ -102,7 +105,8 @@ window.resetPassword = async function() {
   }
   try {
     await sendPasswordResetEmail(auth, email);
-    document.getElementById("auth-message").innerText = "Password reset email sent! Check your inbox.";
+    document.getElementById("auth-message").innerText = 
+      "Password reset email sent! Check your inbox.";
   } catch (error) {
     let message = error.message;
     if (error.code === "auth/user-not-found") {
