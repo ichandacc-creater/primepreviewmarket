@@ -1,158 +1,71 @@
-
-<button id="logout">Logout</button>
-<p id="logout-message"></p>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-  // Your Firebase config (same as auth.js)
-  const firebaseConfig = {
-    apiKey: "AIzaSyCWezSfXRBRWyRMvoY88trhh8drG96n8AY",
-    authDomain: "prime-market.firebaseapp.com",
-    projectId: "prime-market",
-    storageBucket: "prime-market.firebasestorage.app",
-    messagingSenderId: "870687045642",
-    appId: "1:870687045642:web:d10c2313ab71971f5307f3",
-    measurementId: "G-EWLEJS331J"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // Attach logout handler
-  document.getElementById("logout").addEventListener("click", () => {
-    signOut(auth)
-      .then(() => {
-        document.getElementById("logout-message").innerText = "Logged out successfully!";
-        window.location.href = "auth/auth.html"; // Redirect back to login
-      })
-      .catch((error) => {
-        document.getElementById("logout-message").innerText = error.message;
-      });
-  });
-</script>
-
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prime Preview — Modern E‑commerce</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-  <script src="app.js" defer></script>
-  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prime Preview Market - Auth</title>
+  <link rel="stylesheet" href="auth.css">
 </head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <!-- Logo -->
+      <img src="loginassets/logo.png" alt="Prime Preview Market Logo" class="logo">
 
-<!-- IMPORTANT: set category so app.js knows what to render -->
-<body data-category="phones">
-  <header class="site-header">
-    <div class="container header-bar">
-      <a class="brand" href="index.html">
-        <img src="assets/logo.png" alt="Prime Preview logo" class="logo" />
-      </a>
-      <nav class="nav">
-        <a href="phones.html">Phones</a>
-        <a href="accessories.html">Accessories</a>
-        <a href="clothing-shoes.html">Clothing & Shoes</a>
-        <a href="jewelry.html">Jewelry</a>
-        <a href="stanley-cups.html">Stanley Cups</a>
-        <a href="cart.html" class="badge">Cart</a>
-      </nav>
-      <button class="cart-btn" aria-label="Open cart" data-cart-toggle>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h-2l-1 2h2l3 9h8l3-8h-14z"/></svg>
-        <span class="cart-count" data-cart-count>0</span>
-      </button>
-    </div>
-  </header>
-
-  <section class="hero">
-    <div class="container hero-content">
-      <div class="hero-copy">
-        <h1>Upgrade your everyday</h1>
-        <p>Curated tech with premium service—fast delivery, honest pricing, and support that actually cares.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="phones.html">Shop phones</a>
-          <a class="btn btn-ghost" href="cart.html">View cart</a>
-        </div>
+      <!-- Tabs -->
+      <div class="tabs">
+        <button id="tab-login" class="active">Login</button>
+        <button id="tab-signup">Sign Up</button>
       </div>
-      <div class="hero-media">
-        <img src="assets/hero-banner.jpg" alt="Modern smartphone on a clean desk" />
-      </div>
-    </div>
-  </section>
 
-  <section class="categories container">
-    <h2>Browse by category</h2>
-    <div class="category-grid">
-      <a class="category-card" href="phones.html"><span>Phones</span></a>
-      <a class="category-card" href="accessories.html"><span>Accessories</span></a>
-      <a class="category-card" href="clothing-shoes.html"><span>Clothing & Shoes</span></a>
-      <a class="category-card" href="jewelry.html"><span>Jewelry</span></a>
-      <a class="category-card" href="stanley-cups.html"><span>Stanley Cups</span></a>
-    </div>
-  </section>
+      <!-- Login Form -->
+      <form id="login-form" class="form active">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="button" onclick="login()">Login</button>
+        <!-- 🔹 Forgot Password link -->
+        <p><a href="#" onclick="resetPassword()">Forgot Password?</a></p>
+      </form>
 
-  <!-- NEW: Product grid for Add to Cart -->
-  <section class="products container">
-    <h2>Featured Phones</h2>
-    <div id="productGrid" class="product-grid"></div>
-  </section>
+      <!-- Sign Up Form -->
+      <form id="signup-form" class="form">
+        <input type="text" id="signup-firstname" placeholder="First Name" required>
+        <input type="text" id="signup-surname" placeholder="Surname" required>
+        <input type="tel" id="signup-phone" placeholder="Phone Number" required>
+        <input type="text" id="signup-address" placeholder="Residential Address" required>
+        <input type="text" id="signup-province" placeholder="Province" required>
+        <input type="text" id="signup-district" placeholder="District" required>
+        <input type="text" id="signup-country" placeholder="Country" required>
+        <input type="email" id="signup-email" placeholder="Email" required>
+        <input type="password" id="signup-password" placeholder="Password" required>
+        <button type="button" onclick="signUp()">Create Account</button>
+      </form>
 
-  <!-- Cart drawer -->
-  <aside class="cart-drawer" data-cart-drawer aria-hidden="true">
-    <h2>Shopping Cart</h2>
-    <div data-cart-items></div>
-    <div class="cart-summary">
-      <strong>Subtotal:</strong>
-      <span data-cart-subtotal>ZMW 0.00</span>
+      <p id="auth-message"></p>
     </div>
-    <div class="cart-actions">
-      <button class="btn btn-primary">Checkout</button>
-      <button class="btn btn-secondary" data-cart-toggle>Close</button>
-    </div>
-  </aside>
+  </div>
 
-  <!-- Scrim overlay -->
-  <div class="scrim" data-scrim hidden></div>
+  <script type="module" src="auth.js"></script>
+  <script>
+    // Tab switching
+    const loginTab = document.getElementById('tab-login');
+    const signupTab = document.getElementById('tab-signup');
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
 
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <h4>Prime Preview</h4>
-        <p>Trusted tech for Zambia Lusaka Chilanga.</p>
-      </div>
-      <div>
-        <h4>Contact</h4>
-        <ul class="list">
-          <li><a href="tel:+260765660047">+260 765 660 047</a></li>
-          <li><a href="mailto:primepreviewacc@gmail.com">info@primepreviewmarket.com</a></li>
-          <li><a href="https://wa.me/260765660047">WhatsApp</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Follow</h4>
-        <ul class="list">
-          <li>
-            <a href="https://instagram.com/primepreviewac" target="_blank">@primepreviewac</a>
-            <a href="https://instagram.com/yourprofile" target="_blank" class="social-icon">
-              <!-- Instagram SVG -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" viewBox="0 0 24 24">
-                <path d="M12 2.2c3.2 0 3.6 0 4.9.1 ..."/>
-              </svg>
-            </a>
-          </li>
-          <li><a href="#">Facebook</a></li>
-          <li><a href="#">X</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="container footer-bottom">
-      <small>© 2025 Prime Preview. All rights reserved.</small>
-      
-    </div>
-  </footer>
+    loginTab.addEventListener('click', () => {
+      loginTab.classList.add('active');
+      signupTab.classList.remove('active');
+      loginForm.classList.add('active');
+      signupForm.classList.remove('active');
+    });
+
+    signupTab.addEventListener('click', () => {
+      signupTab.classList.add('active');
+      loginTab.classList.remove('active');
+      signupForm.classList.add('active');
+      loginForm.classList.remove('active');
+    });
+  </script>
 </body>
 </html>
