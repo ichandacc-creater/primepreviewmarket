@@ -1,70 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prime Preview Market - Auth</title>
-  <link rel="stylesheet" href="auth.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
+  <style>
+    :root {
+      --blue: #007bff;
+      --black: #000;
+      --white: #fff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--white);
+      color: var(--black);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .container {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      user-select: none;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--blue);
+      display: grid;
+      place-items: center;
+    }
+
+    .logo-mark svg {
+      width: 20px;
+      height: 20px;
+      color: var(--white);
+    }
+
+    .logo-text {
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--black);
+    }
+
+    /* Form */
+    .panel {
+      border: 2px solid var(--black);
+      border-radius: 12px;
+      padding: 24px;
+      background: var(--white);
+    }
+
+    .panel h1 {
+      font-size: 20px;
+      margin: 0 0 16px;
+      color: var(--black);
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: var(--black);
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap svg {
+      position: absolute;
+      left: 12px;
+      width: 18px;
+      height: 18px;
+      color: var(--black);
+      pointer-events: none;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 12px 12px 40px;
+      border: 2px solid var(--black);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--black);
+      outline: none;
+    }
+
+    input::placeholder {
+      color: var(--black);
+      opacity: 0.6;
+    }
+
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0 16px;
+    }
+
+    .link {
+      color: var(--blue);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .link:hover,
+    .link:focus {
+      text-decoration: underline;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--black);
+      border-radius: 8px;
+      background: var(--blue);
+      color: var(--white);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+    }
+
+    .btn:focus {
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--black);
+    }
+
+    .footer .link {
+      font-weight: 600;
+    }
+
+    /* Accessibility helpers */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
 </head>
 <body>
-  <div class="auth-wrapper">
-    <div class="auth-card">
+  <main class="container">
+    <div class="card">
       <!-- Logo -->
-      <img src="loginassets/logo.png" alt="Prime Preview Market Logo" class="logo">
-
-      <!-- Tabs -->
-      <div class="tabs">
-        <button id="tab-login" class="tab-button active">Login</button>
-        <button id="tab-signup" class="tab-button">Sign Up</button>
+      <div class="logo" aria-label="Brand">
+        <div class="logo-mark" aria-hidden="true">
+          <!-- Simple monogram mark -->
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 3l6 6-6 6-6-6 6-6zm0 11.5L17.5 10 12 4.5 6.5 10 12 14.5z"/>
+          </svg>
+        </div>
+        <div class="logo-text">YourBrand</div>
       </div>
 
-      <!-- Login Form -->
-      <form id="login-form" class="form active">
-        <input type="email" id="login-email" placeholder="Email" required>
-        <input type="password" id="login-password" placeholder="Password" required>
-        <button type="button" class="auth-button" onclick="login()">Login</button>
-        <p class="forgot-link"><a href="#" onclick="resetPassword()">Forgot Password?</a></p>
-      </form>
+      <!-- Panel -->
+      <section class="panel" aria-labelledby="login-title">
+        <h1 id="login-title">Log in</h1>
 
-      <!-- Sign Up Form -->
-      <form id="signup-form" class="form">
-        <input type="text" id="signup-firstname" placeholder="First Name" required>
-        <input type="text" id="signup-surname" placeholder="Surname" required>
-        <input type="tel" id="signup-phone" placeholder="Phone Number" required>
-        <input type="text" id="signup-address" placeholder="Residential Address" required>
-        <input type="text" id="signup-province" placeholder="Province" required>
-        <input type="text" id="signup-district" placeholder="District" required>
-        <input type="text" id="signup-country" placeholder="Country" required>
-        <input type="email" id="signup-email" placeholder="Email" required>
-        <input type="password" id="signup-password" placeholder="Password" required>
-        <button type="button" class="auth-button" onclick="signUp()">Create Account</button>
-      </form>
+        <form action="#" method="post" novalidate>
+          <!-- Email -->
+          <div class="field">
+            <label class="label" for="email">Email address</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M20 4H4c-1.1 0-2 .9-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"/>
+              </svg>
+              <input id="email" name="email" type="email" placeholder="name@example.com" required />
+            </div>
+          </div>
 
-      <p id="auth-message"></p>
+          <!-- Password -->
+          <div class="field">
+            <label class="label" for="password">Password</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 1 1 6 0v3H9zm3 5a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/>
+              </svg>
+              <input id="password" name="password" type="password" placeholder="••••••••" required />
+            </div>
+          </div>
+
+          <!-- Forgot + spacer -->
+          <div class="row" aria-hidden="true">
+            <span class="sr-only">Password help and spacing</span>
+            <a class="link" href="#">Forgot password?</a>
+            <span></span>
+          </div>
+
+          <!-- Submit -->
+          <button class="btn" type="submit">LOG IN</button>
+
+          <!-- Footer -->
+          <p class="footer">
+            <span>Don’t have an account?</span>
+            <a class="link" href="#">Sign up</a>
+          </p>
+        </form>
+      </section>
     </div>
-  </div>
-
-  <script type="module" src="auth.js"></script>
-  <script>
-    // Tab switching
-    const loginTab = document.getElementById('tab-login');
-    const signupTab = document.getElementById('tab-signup');
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
-
-    loginTab.addEventListener('click', () => {
-      loginTab.classList.add('active');
-      signupTab.classList.remove('active');
-      loginForm.classList.add('active');
-      signupForm.classList.remove('active');
-    });
-
-    signupTab.addEventListener('click', () => {
-      signupTab.classList.add('active');
-      loginTab.classList.remove('active');
-      signupForm.classList.add('active');
-      loginForm.classList.remove('active');
-    });
-  </script>
+  </main>
 </body>
 </html>
