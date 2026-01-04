@@ -1,4 +1,14 @@
-// Firebase configuration
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  sendPasswordResetEmail 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, setDoc, doc } 
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// ✅ Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCWezSfXRBRWyRMvoY88trhh8drG96n8AY",
   authDomain: "prime-market.firebaseapp.com",
@@ -9,54 +19,99 @@ const firebaseConfig = {
   measurementId: "G-EWLEJS331J"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// LOGIN
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+console.log("Firebase initialized:", app);
 
-  try {
-    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-    alert("Login successful!");
-    // Redirect to index2.html
-    window.location.href = "index2.html";
-  } catch (error) {
-    alert("Login failed: " + error.message);
-  }
-});
-
-// SIGN UP
-document.getElementById("signupLink").addEventListener("click", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+// 🔹 Sign Up
+window.signUp = async function() {
+  const firstname = document.getElementById("signup-firstname").value;
+  const surname = document.getElementById("signup-surname").value;
+  const phone = document.getElementById("signup-phone").value;
+  const address = document.getElementById("signup-address").value;
+  const province = document.getElementById("signup-province").value;
+  const district = document.getElementById("signup-district").value;
+  const country = document.getElementById("signup-country").value;
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
 
   try {
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    alert("Account created successfully!");
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      firstname,
+      surname,
+      phone,
+      address,
+      province,
+      district,
+      country,
+      email
+    });
+
+    document.getElementById("auth-message").innerText = 
+      "Account successfully created! Redirecting to login...";
+
+    // ✅ Redirect back to login page (index.html) after 2 seconds
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 2000);
+
   } catch (error) {
-    alert("Signup failed: " + error.message);
+    let message = error.message;
+    if (error.code === "auth/email-already-in-use") {
+      message = "This email is already registered. Please login instead.";
+    } else if (error.code === "auth/weak-password") {
+      message = "Password too weak. Use at least 6 characters.";
+    }
+    document.getElementById("auth-message").innerText = message;
   }
-});
+};
 
-// PASSWORD RESET
-document.getElementById("forgotLink").addEventListener("click", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value.trim();
+// 🔹 Login
+window.login = async function() {
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
 
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    document.getElementById("auth-message").innerText = "Login successful! Redirecting...";
+
+    // ✅ Redirect to index2.html after login
+    setTimeout(() => {
+      window.location.href = "index2.html";
+    }, 1500);
+
+  } catch (error) {
+    let message = error.message;
+    if (error.code === "auth/wrong-password") {
+      message = "Incorrect password. Please try again.";
+    } else if (error.code === "auth/user-not-found") {
+      message = "No account found with this email.";
+    }
+    document.getElementById("auth-message").innerText = message;
+  }
+};
+
+// 🔹 Forgot Password
+window.resetPassword = async function() {
+  const email = document.getElementById("login-email").value;
   if (!email) {
-    alert("Enter your email to reset password.");
+    document.getElementById("auth-message").innerText = "Please enter your email above first.";
     return;
   }
-
   try {
-    await auth.sendPasswordResetEmail(email);
-    alert("Password reset email sent!");
+    await sendPasswordResetEmail(auth, email);
+    document.getElementById("auth-message").innerText = 
+      "Password reset email sent! Check your inbox.";
   } catch (error) {
-    alert("Reset failed: " + error.message);
+    let message = error.message;
+    if (error.code === "auth/user-not-found") {
+      message = "No account found with this email.";
+    }
+    document.getElementById("auth-message").innerText = message;
   }
-});
+};
