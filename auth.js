@@ -1,14 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  sendPasswordResetEmail 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, setDoc, doc } 
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// ✅ Firebase config
+// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCWezSfXRBRWyRMvoY88trhh8drG96n8AY",
   authDomain: "prime-market.firebaseapp.com",
@@ -19,99 +9,81 @@ const firebaseConfig = {
   measurementId: "G-EWLEJS331J"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-console.log("Firebase initialized:", app);
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("form");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
 
-// 🔹 Sign Up
-window.signUp = async function() {
-  const firstname = document.getElementById("signup-firstname").value;
-  const surname = document.getElementById("signup-surname").value;
-  const phone = document.getElementById("signup-phone").value;
-  const address = document.getElementById("signup-address").value;
-  const province = document.getElementById("signup-province").value;
-  const district = document.getElementById("signup-district").value;
-  const country = document.getElementById("signup-country").value;
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
+  // LOGIN
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
 
-    await setDoc(doc(db, "users", user.uid), {
-      firstname,
-      surname,
-      phone,
-      address,
-      province,
-      district,
-      country,
-      email
+    try {
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+      console.log("Logged in:", user);
+      alert("Login successful!");
+      // Redirect after login
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      console.error("Login error:", error);
+      alert(error.message);
+    }
+  });
+
+  // SIGN UP (for "Sign up" link)
+  const signupLink = document.querySelector(".footer .link");
+  if (signupLink) {
+    signupLink.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!email || !password) {
+        alert("Enter email and password to sign up.");
+        return;
+      }
+
+      try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        console.log("User created:", userCredential.user);
+        alert("Account created successfully!");
+      } catch (error) {
+        console.error("Signup error:", error);
+        alert(error.message);
+      }
     });
-
-    document.getElementById("auth-message").innerText = 
-      "Account successfully created! Redirecting to login...";
-
-    // ✅ Redirect back to login page (index.html) after 2 seconds
-    setTimeout(() => {
-      window.location.href = "index.html";
-    }, 2000);
-
-  } catch (error) {
-    let message = error.message;
-    if (error.code === "auth/email-already-in-use") {
-      message = "This email is already registered. Please login instead.";
-    } else if (error.code === "auth/weak-password") {
-      message = "Password too weak. Use at least 6 characters.";
-    }
-    document.getElementById("auth-message").innerText = message;
   }
-};
 
-// 🔹 Login
-window.login = async function() {
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
+  // PASSWORD RESET (for "Forgot password?" link)
+  const forgotLink = document.querySelector(".row .link");
+  if (forgotLink) {
+    forgotLink.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
 
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    document.getElementById("auth-message").innerText = "Login successful! Redirecting...";
+      if (!email) {
+        alert("Enter your email to reset password.");
+        return;
+      }
 
-    // ✅ Redirect to index2.html after login
-    setTimeout(() => {
-      window.location.href = "index2.html";
-    }, 1500);
-
-  } catch (error) {
-    let message = error.message;
-    if (error.code === "auth/wrong-password") {
-      message = "Incorrect password. Please try again.";
-    } else if (error.code === "auth/user-not-found") {
-      message = "No account found with this email.";
-    }
-    document.getElementById("auth-message").innerText = message;
+      try {
+        await auth.sendPasswordResetEmail(email);
+        alert("Password reset email sent!");
+      } catch (error) {
+        console.error("Reset error:", error);
+        alert(error.message);
+      }
+    });
   }
-};
-
-// 🔹 Forgot Password
-window.resetPassword = async function() {
-  const email = document.getElementById("login-email").value;
-  if (!email) {
-    document.getElementById("auth-message").innerText = "Please enter your email above first.";
-    return;
-  }
-  try {
-    await sendPasswordResetEmail(auth, email);
-    document.getElementById("auth-message").innerText = 
-      "Password reset email sent! Check your inbox.";
-  } catch (error) {
-    let message = error.message;
-    if (error.code === "auth/user-not-found") {
-      message = "No account found with this email.";
-    }
-    document.getElementById("auth-message").innerText = message;
-  }
-};
+});
