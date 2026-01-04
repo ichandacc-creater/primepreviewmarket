@@ -1,4 +1,27 @@
 <!DOCTYPE html>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCWezSfXRBRWyRMvoY88trhh8drG96n8AY",
+    authDomain: "prime-market.firebaseapp.com",
+    projectId: "prime-market",
+    storageBucket: "prime-market.firebasestorage.app",
+    messagingSenderId: "870687045642",
+    appId: "1:870687045642:web:d10c2313ab71971f5307f3",
+    measurementId: "G-EWLEJS331J"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      // Not logged in → send back to login page
+      window.location.href = "index.html";
+    }
+  });
+</script>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -6,6 +29,7 @@
   <title>Login</title>
   <link rel="stylesheet" href="auth.css" />
 </head>
+  
 <body>
   <main class="container">
     <div class="card">
