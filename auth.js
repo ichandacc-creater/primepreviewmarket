@@ -33,15 +33,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const user = userCredential.user;
       console.log("Logged in:", user);
       alert("Login successful!");
-      // Redirect after login
-      window.location.href = "dashboard.html";
+
+      // ✅ Redirect to index2.html after successful login
+      window.location.href = "index2.html";
     } catch (error) {
       console.error("Login error:", error);
       alert(error.message);
     }
   });
 
-  // SIGN UP (for "Sign up" link)
+  // SIGN UP (optional)
   const signupLink = document.querySelector(".footer .link");
   if (signupLink) {
     signupLink.addEventListener("click", async (e) => {
@@ -65,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // PASSWORD RESET (for "Forgot password?" link)
+  // PASSWORD RESET
   const forgotLink = document.querySelector(".row .link");
   if (forgotLink) {
     forgotLink.addEventListener("click", async (e) => {
