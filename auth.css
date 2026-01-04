@@ -1,45 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - Prime Preview Market</title>
-  <link rel="stylesheet" href="auth.css" />
-</head>
-<body>
-  <div class="auth-wrapper">
-    <div class="auth-card">
-      <!-- Logo space -->
-      <div class="logo-space">
-        <img src="loginassets/logo.png" alt="Logo" class="logo" />
-      </div>
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #000000; /* black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #ffffff;
+}
 
-      <!-- Heading -->
-      <h2 class="auth-title">LOG IN</h2>
+.auth-card {
+  background: #000000;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 360px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
 
-      <!-- Login Form -->
-      <form id="login-form" class="form active">
-        <div class="input-group">
-          <span class="icon">📧</span>
-          <input type="email" id="login-email" placeholder="Email address" required />
-        </div>
-        <div class="input-group">
-          <span class="icon">🔒</span>
-          <input type="password" id="login-password" placeholder="Password" required />
-        </div>
-        <p class="forgot-link"><a href="#" onclick="resetPassword()">Forgot password?</a></p>
-        <button type="button" class="auth-button" onclick="login()">LOG IN</button>
-      </form>
+.logo {
+  width: 80px;
+  margin-bottom: 1rem;
+}
 
-      <!-- Footer -->
-      <div class="auth-footer">
-        <p>Don't have an account? <a href="#" onclick="signUp()">Sign up</a></p>
-      </div>
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.5rem;
+}
 
-      <p id="auth-message"></p>
-    </div>
-  </div>
+.tab-button {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
 
-  <script src="auth.js"></script>
-</body>
-</html>
+.tab-button.active {
+  background: #007bff;
+  color: #ffffff;
+}
+
+.form {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form.active {
+  display: flex;
+}
+
+input {
+  padding: 0.75rem;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+input::placeholder {
+  color: #cccccc;
+}
+
+.auth-button {
+  background: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.auth-button:hover {
+  background: #0056b3;
+}
+
+.forgot-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.forgot-link a:hover {
+  text-decoration: underline;
+}
+
+#auth-message {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
