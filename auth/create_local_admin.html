@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Create Local Admin (dev)</title>
+  <style>body{font-family:Arial,Helvetica,sans-serif;padding:2rem}pre{background:#f6f8fa;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+  <h2>Create Admin Account (Dev Helper)</h2>
+  <p>This page will try to create an admin account using Firebase. If Firebase is unreachable, it will add a cached admin profile to <code>localStorage</code> so you can sign in locally for development.</p>
+  <div id="status">Starting...</div>
+  <pre id="out"></pre>
+  <p><a id="goto" href="admin-login.html">Go to Admin Login</a></p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const email = "ichandacc@gmail.com";
+    const password = "ichanda01@";
+
+    const out = (msg) => {
+      const p = document.getElementById('out');
+      p.textContent += msg + "\n";
+      console.log(msg);
+    };
+
+    // Copy firebaseConfig from auth.js
+    const firebaseConfig = {
+      apiKey: "AIzaSyCWezSfXRBRWyRMvoY88trhh8drG96n8AY",
+      authDomain: "prime-market.firebaseapp.com",
+      projectId: "prime-market",
+      storageBucket: "prime-market.firebasestorage.app",
+      messagingSenderId: "870687045642",
+      appId: "1:870687045642:web:d10c2313ab71971f5307f3",
+      measurementId: "G-EWLEJS331J"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    (async function createAdmin() {
+      document.getElementById('status').textContent = 'Attempting Firebase signup...';
+      const adminProfile = {
+        email,
+        userRole: 'admin',
+        permissions: ['view_reports','view_users','manage_products'],
+        status: 'active',
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        out('Calling Firebase createUserWithEmailAndPassword...');
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const user = cred.user;
+        out('Firebase user created: ' + user.uid);
+        // write Firestore profile
+        try {
+          await setDoc(doc(db, 'users', user.uid), adminProfile);
+          out('Firestore profile written for ' + user.uid);
+        } catch (e) {
+          out('Failed to write Firestore profile: ' + (e && e.message));
+        }
+        // update cache
+        try {
+          const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
+          cache[user.uid] = adminProfile;
+          localStorage.setItem('users-cache', JSON.stringify(cache));
+          out('Updated users-cache with Firebase uid.');
+        } catch (e) { out('Could not update users-cache: ' + e); }
+
+        document.getElementById('status').textContent = 'Admin created via Firebase. Redirecting to admin login...';
+        setTimeout(() => { window.location.href = 'admin-login.html'; }, 1500);
+        return;
+      } catch (err) {
+        out('Firebase signup failed: ' + (err && err.message));
+        out('Falling back to creating a local cached admin profile.');
+      }
+
+      // Fallback: write a cached admin profile so offline/dev login works
+      try {
+        const uid = 'local-admin-' + Date.now();
+        adminProfile.uid = uid;
+        const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
+        cache[uid] = adminProfile;
+        localStorage.setItem('users-cache', JSON.stringify(cache));
+        // Also set currentUser so user is effectively logged in locally
+        localStorage.setItem('currentUser', JSON.stringify({ uid, email, role: 'admin', name: 'Admin' }));
+        out('Local users-cache updated with uid: ' + uid);
+        document.getElementById('status').textContent = 'Local admin created. Redirecting to admin dashboard...';
+        setTimeout(() => { window.location.href = 'admin-dashboard.html'; }, 1000);
+      } catch (e) {
+        out('Failed to write users-cache: ' + e);
+        document.getElementById('status').textContent = 'Failed to create admin.';
+      }
+    })();
+  </script>
+</body>
+</html>
