@@ -1,7 +1,34 @@
 // app.js
 
-
 function format(n){ return `ZMW ${n.toFixed(2)}`; }
+
+// Try alternate filenames when an image fails to load.
+window.handleImgError = function(imgEl, origPath){
+  if (!imgEl || imgEl._tried) return imgEl && (imgEl.src = 'assets/hero-banner.jpg');
+  imgEl._tried = imgEl._tried || 0;
+
+  const parts = origPath.split('/');
+  const filename = parts.pop();
+  const dir = parts.join('/') + '/';
+
+  // attempt strategy list
+  const tries = [];
+  // 1) insert hyphen before first digit group: iphone12.jpg -> iphone-12.jpg
+  tries.push(filename.replace(/([a-zA-Z]+)(\d+)/, '$1-$2'));
+  // 2) remove hyphens: iphone-12.jpg -> iphone12.jpg
+  tries.push(filename.replace(/-/g,''));
+  // 3) lowercased
+  tries.push(filename.toLowerCase());
+  // 4) try removing 'mini' / 'pro' suffixes
+  tries.push(filename.replace(/mini/i, ''));
+  tries.push(filename.replace(/promax/i, 'promax'));
+
+  // pick next try
+  const next = tries[imgEl._tried] || 'hero-banner.jpg';
+  imgEl._tried += 1;
+  const nextPath = next === 'hero-banner.jpg' ? 'assets/hero-banner.jpg' : dir + next;
+  imgEl.src = nextPath;
+};
 
 // ---------- Product catalogs ----------
 const phoneProducts = [
@@ -14,23 +41,23 @@ const phoneProducts = [
   { id:'ip11', brand:'apple', title:'iPhone 11', price: 7000, img:'assets/iphone11.jpg' },
   { id:'ip11pro', brand:'apple', title:'iPhone 11 Pro', price: 8000, img:'assets/iphone11pro.jpg' },
   { id:'ip11promax', brand:'apple', title:'iPhone 11 Pro Max', price: 9000, img:'assets/iphone11promax.jpg' },
-  { id:'ip12', brand:'apple', title:'iPhone 12', price: 9500, img:'assets/iphone12.jpg' },
-  { id:'ip12mini', brand:'apple', title:'iPhone 12 Mini', price: 8800, img:'assets/iphone12mini.jpg' },
+  { id:'ip12', brand:'apple', title:'iPhone 12', price: 9500, img:'assets/iphone-12.jpg' },
+  { id:'ip12mini', brand:'apple', title:'iPhone 12 Mini', price: 8800, img:'assets/iphone-12.jpg' },
   { id:'ip12pro', brand:'apple', title:'iPhone 12 Pro', price: 10500, img:'assets/iphone12pro.jpg' },
   { id:'ip12promax', brand:'apple', title:'iPhone 12 Pro Max', price: 11500, img:'assets/iphone12promax.jpg' },
   { id:'ip13', brand:'apple', title:'iPhone 13', price: 10000, img:'assets/iphone13.jpg' },
-  { id:'ip13mini', brand:'apple', title:'iPhone 13 Mini', price: 9200, img:'assets/iphone13mini.jpg' },
+  { id:'ip13mini', brand:'apple', title:'iPhone 13 Mini', price: 9200, img:'assets/iphone13.jpg' },
   { id:'ip13pro', brand:'apple', title:'iPhone 13 Pro', price: 11000, img:'assets/iphone13pro.jpg' },
   { id:'ip13promax', brand:'apple', title:'iPhone 13 Pro Max', price: 12000, img:'assets/iphone13promax.jpg' },
   { id:'ip14', brand:'apple', title:'iPhone 14', price: 11500, img:'assets/iphone14.jpg' },
-  { id:'ip14plus', brand:'apple', title:'iPhone 14 Plus', price: 12500, img:'assets/iphone14plus.jpg' },
+  { id:'ip14plus', brand:'apple', title:'iPhone 14 Plus', price: 12500, img:'assets/iphone14.jpg' },
   { id:'ip14pro', brand:'apple', title:'iPhone 14 Pro', price: 13500, img:'assets/iphone14pro.jpg' },
   { id:'ip14promax', brand:'apple', title:'iPhone 14 Pro Max', price: 14500, img:'assets/iphone14promax.jpg' },
   { id:'ip15', brand:'apple', title:'iPhone 15', price: 12000, img:'assets/iphone15.jpg' },
-  { id:'ip15plus', brand:'apple', title:'iPhone 15 Plus', price: 13000, img:'assets/iphone15plus.jpg' },
+  { id:'ip15plus', brand:'apple', title:'iPhone 15 Plus', price: 13000, img:'assets/iphone15.jpg' },
   { id:'ip15pro', brand:'apple', title:'iPhone 15 Pro', price: 14000, img:'assets/iphone15pro.jpg' },
-  { id:'ip15promax', brand:'apple', title:'iPhone 15 Pro Max', price: 15000, img:'assets/iphone15promax.jpg' },
-  { id:'ip16', brand:'apple', title:'iPhone 16', price: 12500, img:'assets/iphone16.jpg' },
+  { id:'ip15promax', brand:'apple', title:'iPhone 15 Pro Max', price: 15000, img:'assets/iphone15pro.jpg' },
+  { id:'ip16', brand:'apple', title:'iPhone 16', price: 12500, img:'assets/iphone16plus.jpg' },
   { id:'ip16plus', brand:'apple', title:'iPhone 16 Plus', price: 13500, img:'assets/iphone16plus.jpg' },
   { id:'ip16pro', brand:'apple', title:'iPhone 16 Pro', price: 14500, img:'assets/iphone16pro.jpg' },
   { id:'ip16promax', brand:'apple', title:'iPhone 16 Pro Max', price: 15500, img:'assets/iphone16promax.jpg' },
@@ -63,13 +90,13 @@ const clothingProducts = [
 ];
 
 const accessoriesProducts = [
-  { id:'case1', brand:'accessory', title:'iPhone 14 Case', price: 150, img:'assets/case.jpg' },
-  { id:'charger1', brand:'accessory', title:'Fast Charger', price: 500, img:'assets/charger.jpg' },
+  { id:'case1', brand:'accessory', title:'iPhone 14 Case', price: 150, img:'assets/1.jpg' },
+  { id:'charger1', brand:'accessory', title:'Fast Charger', price: 500, img:'assets/dd.png' },
 ];
 
 const jewelryProducts = [
-  { id:'necklace1', brand:'jewelry', title:'Gold Necklace', price: 2000, img:'assets/necklace.jpg' },
-  { id:'ring1', brand:'jewelry', title:'Silver Ring', price: 1200, img:'assets/ring.jpg' },
+  { id:'necklace1', brand:'jewelry', title:'Gold Necklace', price: 2000, img:'assets/1.jpg' },
+  { id:'ring1', brand:'jewelry', title:'Silver Ring', price: 1200, img:'assets/1.jpg' },
 ];
 
 // ---------- State ----------
@@ -80,9 +107,27 @@ const els = {
   count: document.querySelector('[data-cart-count]'),
   drawer: document.querySelector('[data-cart-drawer]'),
   items: document.querySelector('[data-cart-items]'),
+  itemsPage: document.querySelector('[data-cart-items-page]'),
   subtotal: document.querySelector('[data-cart-subtotal]'),
+  tax: document.querySelector('[data-cart-tax]'),
+  total: document.querySelector('[data-cart-total]'),
   scrim: document.querySelector('[data-scrim]'),
+  modal: document.getElementById('imageModal'),
+  modalImage: document.getElementById('modalImage'),
+  closeModalBtn: document.getElementById('closeModal'),
+  checkoutBtn: document.getElementById('checkout-btn'),
 };
+
+// Load cart from localStorage
+function loadCart() {
+  const saved = localStorage.getItem('cart');
+  if (saved) state.cart = JSON.parse(saved);
+}
+
+// Save cart to localStorage
+function saveCart() {
+  localStorage.setItem('cart', JSON.stringify(state.cart));
+}
 
 // ---------- Render products ----------
 function renderProducts(){
@@ -102,7 +147,7 @@ function renderProducts(){
     if (p.variants) {
       return `
         <article class="product-card" data-id="${p.id}">
-          <div class="product-media"><img src="${p.variants[0].img}" alt="${p.title}"></div>
+          <div class="product-media clickable-image" data-img="${p.variants[0].img}"><img src="${p.variants[0].img}" alt="${p.title}" onerror="handleImgError(this,'${p.variants[0].img}')"></div>
           <div class="product-meta">
             <div class="product-title">${p.title}</div>
             <div class="price">${format(p.price)}</div>
@@ -119,7 +164,7 @@ function renderProducts(){
     // Normal products
     return `
       <article class="product-card" data-id="${p.id}">
-        <div class="product-media"><img src="${p.img}" alt="${p.title}"></div>
+        <div class="product-media clickable-image" data-img="${p.img}"><img src="${p.img}" alt="${p.title}" onerror="handleImgError(this,'${p.img}')"></div>
         <div class="product-meta">
           <div class="product-title">${p.title}</div>
           <div class="price">${format(p.price)}</div>
@@ -130,13 +175,15 @@ function renderProducts(){
   }).join('');
 }
 
-// ---------- Render cart ----------
+// ---------- Render cart (drawer version) ----------
 function renderCart(){
+  if (!els.items) return;
+  
   const entries = Object.values(state.cart);
   els.items.innerHTML = entries.length ? entries.map(item => `
     <div class="cart-item">
-      <img src="${item.img}" alt="${item.title}">
-      <div>
+      <img src="${item.img}" alt="${item.title}" class="clickable-image" data-img="${item.img}" onerror="handleImgError(this,'${item.img}')">
+      <div class="cart-item-content">
         <strong>${item.title}</strong>
         ${item.color ? `<div class="muted">Color: ${item.color}</div>` : ''}
         <div class="muted">${format(item.price)} × ${item.qty}</div>
@@ -145,24 +192,164 @@ function renderCart(){
     </div>
   `).join('') : `<p class="muted">Your cart is empty.</p>`;
 
-  const totalQty = entries.reduce((a,c)=>a+c.qty,0);
-  const subtotal = entries.reduce((a,c)=>a+c.qty*c.price,0);
-  els.count.textContent = totalQty;
-  els.subtotal.textContent = format(subtotal);
+  updateCartTotals();
 }
+
+// ---------- Render cart page (full page version) ----------
+function renderCartPage(){
+  if (!els.itemsPage) return;
+  
+  const entries = Object.values(state.cart);
+  
+  if (entries.length === 0) {
+    els.itemsPage.innerHTML = `
+      <div class="empty-cart">
+        <p>Your cart is empty.</p>
+        <a href="phones.html" class="btn btn-primary">Start Shopping</a>
+      </div>
+    `;
+    if (els.checkoutBtn) els.checkoutBtn.disabled = true;
+    return;
+  }
+
+  els.itemsPage.innerHTML = `
+    <div class="cart-items-table">
+      <div class="cart-header">
+        <div>Product</div>
+        <div>Price</div>
+        <div>Qty</div>
+        <div>Total</div>
+        <div>Action</div>
+      </div>
+      ${entries.map(item => `
+        <div class="cart-row" data-item-id="${item.id}">
+            <div class="cart-product">
+            <img src="${item.img}" alt="${item.title}" class="clickable-image" data-img="${item.img}" onerror="handleImgError(this,'${item.img}')">
+            <div>
+              <div class="product-name">${item.title}</div>
+              ${item.color ? `<div class="muted">Color: ${item.color}</div>` : ''}
+            </div>
+          </div>
+          <div>${format(item.price)}</div>
+          <div class="qty-control">
+            <button class="qty-btn" data-remove="${item.id}">−</button>
+            <input type="number" class="qty-input" value="${item.qty}" data-qty="${item.id}" min="1">
+            <button class="qty-btn" data-add-qty="${item.id}">+</button>
+          </div>
+          <div><strong>${format(item.price * item.qty)}</strong></div>
+          <div>
+            <button class="btn btn-small btn-danger" data-delete="${item.id}">Remove</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  updateCartTotals();
+  
+  if (els.checkoutBtn) els.checkoutBtn.disabled = entries.length === 0;
+}
+
+// ---------- Update cart totals ----------
+function updateCartTotals(){
+  const entries = Object.values(state.cart);
+  const subtotal = entries.reduce((a, c) => a + c.qty * c.price, 0);
+  const tax = subtotal * 0.1; // 10% tax
+  const total = subtotal + tax;
+
+  if (els.count) {
+    const totalQty = entries.reduce((a, c) => a + c.qty, 0);
+    els.count.textContent = totalQty;
+  }
+
+  if (els.subtotal) els.subtotal.textContent = format(subtotal);
+  if (els.tax) els.tax.textContent = format(tax);
+  if (els.total) els.total.textContent = format(total);
+}
+
+// ---------- Image Modal ----------
+function openImageModal(imgSrc) {
+  if (els.modal) {
+    // reset zoom state
+    els.modalImage.style.transform = 'scale(1)';
+    els.modalImage.dataset.scale = 1;
+    els.modalImage.src = imgSrc;
+    els.modal.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeImageModal() {
+  if (els.modal) {
+    els.modal.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+  }
+}
+
+// Image zoom helpers
+function setImageScale(imgEl, scale) {
+  scale = Math.max(0.5, Math.min(4, scale));
+  imgEl.style.transform = `scale(${scale})`;
+  imgEl.dataset.scale = scale;
+}
+
+// Wire zoom controls when modal exists
+document.addEventListener('DOMContentLoaded', () => {
+  const img = document.getElementById('modalImage');
+  const modal = document.getElementById('imageModal');
+  if (!img || !modal) return;
+
+  // Wheel to zoom
+  img.addEventListener('wheel', (ev) => {
+    ev.preventDefault();
+    const cur = parseFloat(img.dataset.scale || '1');
+    const delta = ev.deltaY < 0 ? 0.1 : -0.1;
+    setImageScale(img, cur + delta);
+  }, { passive: false });
+
+  // Buttons
+  const zin = document.getElementById('zoomIn');
+  const zout = document.getElementById('zoomOut');
+  const rset = document.getElementById('resetZoom');
+  zin && zin.addEventListener('click', () => setImageScale(img, parseFloat(img.dataset.scale || '1') + 0.2));
+  zout && zout.addEventListener('click', () => setImageScale(img, parseFloat(img.dataset.scale || '1') - 0.2));
+  rset && rset.addEventListener('click', () => setImageScale(img, 1));
+
+  // Double-click to toggle reset/2x
+  img.addEventListener('dblclick', () => {
+    const cur = parseFloat(img.dataset.scale || '1');
+    setImageScale(img, cur > 1.5 ? 1 : 2);
+  });
+});
 
 // ---------- Drawer ----------
 function openCart(open=true){
+  if (!els.drawer) return;
   els.drawer.classList.toggle('is-open', open);
   els.drawer.setAttribute('aria-hidden', (!open).toString());
-  els.scrim.hidden = !open;
+  if (els.scrim) els.scrim.hidden = !open;
 }
 
 // ---------- Events ----------
 document.addEventListener('click', e => {
   const t = e.target;
 
-  if(t.matches('[data-cart-toggle]')) openCart(!els.drawer.classList.contains('is-open'));
+  // Cart toggle
+  if(t.matches('[data-cart-toggle]')) openCart(!els.drawer?.classList.contains('is-open'));
+
+  // Image modal click
+  if(t.closest('.clickable-image')) {
+    const imgSrc = t.closest('.clickable-image').dataset.img;
+    openImageModal(imgSrc);
+  }
+
+  // Modal close button
+  if(t.id === 'closeModal') closeImageModal();
+
+  // Close modal on scrim click
+  if(t.id === 'imageModal') closeImageModal();
+
+  // Add to cart
   if(t.matches('[data-add]')){
     const id = t.getAttribute('data-add');
     const allProducts = [...phoneProducts, ...stanleyProducts, ...clothingProducts, ...accessoriesProducts, ...jewelryProducts];
@@ -180,12 +367,69 @@ document.addEventListener('click', e => {
     state.cart[id].color = chosenColor;
     state.cart[id].img = chosenImg;
 
-    renderProducts(); renderCart(); openCart(true);
+    saveCart();
+    renderProducts();
+    renderCart();
+    renderCartPage();
+    openCart(true);
+  }
+
+  // Remove item from cart
+  if(t.matches('[data-delete]')){
+    const id = t.getAttribute('data-delete');
+    delete state.cart[id];
+    saveCart();
+    renderCart();
+    renderCartPage();
+  }
+
+  // Add quantity
+  if(t.matches('[data-add-qty]')){
+    const id = t.getAttribute('data-add-qty');
+    if(state.cart[id]) {
+      state.cart[id].qty++;
+      saveCart();
+      renderCart();
+      renderCartPage();
+    }
+  }
+
+  // Remove quantity
+  if(t.matches('[data-remove]')){
+    const id = t.getAttribute('data-remove');
+    if(state.cart[id]) {
+      state.cart[id].qty--;
+      if(state.cart[id].qty <= 0) delete state.cart[id];
+      saveCart();
+      renderCart();
+      renderCartPage();
+    }
+  }
+
+  // Checkout
+  if(t.id === 'checkout-btn'){
+    const entries = Object.values(state.cart);
+    if(entries.length > 0) {
+      window.location.href = 'checkout.html';
+    }
   }
 });
 
-// ---------- Live image switching for color selection ----------
+// ---------- Handle quantity input change ----------
 document.addEventListener('change', e => {
+  const input = e.target.closest('input[data-qty]');
+  if(input) {
+    const id = input.getAttribute('data-qty');
+    const qty = parseInt(input.value);
+    if(qty > 0) {
+      state.cart[id].qty = qty;
+      saveCart();
+      renderCart();
+      renderCartPage();
+    }
+  }
+
+  // Color selection
   const select = e.target.closest('select[data-color]');
   if(select){
     const id = select.getAttribute('data-color');
@@ -198,5 +442,8 @@ document.addEventListener('change', e => {
 });
 
 // ---------- Init ----------
+loadCart();
 renderProducts();
 renderCart();
+renderCartPage();
+

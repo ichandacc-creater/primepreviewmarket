@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Checkout — Prime Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+  <script src="checkout.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Prime Preview logo" class="logo">
+      </a>
+      <nav class="nav">
+        <a href="cart.html">← Back to Cart</a>
+      </nav>
+      <a href="auth/index2.html" class="cart-btn">👤 Account</a>
+    </div>
+  </header>
+
+  <main class="container checkout-container">
+    <h1>Checkout</h1>
+
+    <div class="checkout-wrapper">
+      <!-- Left side: Shipping & Payment info -->
+      <div class="checkout-form-section">
+        <!-- Shipping Address -->
+        <div class="form-section">
+          <h2>Shipping Address</h2>
+          <div class="form-group">
+            <label for="fullName">Full Name *</label>
+            <input type="text" id="fullName" placeholder="John Doe" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Phone Number *</label>
+              <input type="tel" id="phone" placeholder="+260..." required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input type="email" id="email" placeholder="john@example.com" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="address">Street Address *</label>
+            <input type="text" id="address" placeholder="123 Main St" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="city">City *</label>
+              <input type="text" id="city" placeholder="Lusaka" required>
+            </div>
+            <div class="form-group">
+              <label for="district">District *</label>
+              <input type="text" id="district" placeholder="Lusaka" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="province">Province *</label>
+              <select id="province" required>
+                <option value="">Select Province</option>
+                <option value="lusaka">Lusaka</option>
+                <option value="copperbelt">Copperbelt</option>
+                <option value="central">Central</option>
+                <option value="eastern">Eastern</option>
+                <option value="northern">Northern</option>
+                <option value="southern">Southern</option>
+                <option value="western">Western</option>
+                <option value="northwestern">Northwestern</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="zipcode">Zip Code *</label>
+              <input type="text" id="zipcode" placeholder="10101" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Method Selection -->
+        <div class="form-section">
+          <h2>Select Payment Method</h2>
+          
+          <div class="payment-methods">
+            <label class="payment-option">
+              <input type="radio" name="payment" value="airtel" checked>
+              <div class="payment-card">
+                <div class="payment-icon">📱</div>
+                <div class="payment-details">
+                  <strong>Airtel Money</strong>
+                  <p>Pay using your Airtel Money account</p>
+                </div>
+              </div>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" name="payment" value="mtn">
+              <div class="payment-card">
+                <div class="payment-icon">💳</div>
+                <div class="payment-details">
+                  <strong>MTN Money</strong>
+                  <p>Pay using MTN Mobile Money</p>
+                </div>
+              </div>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" name="payment" value="dpo">
+              <div class="payment-card">
+                <div class="payment-icon">🏦</div>
+                <div class="payment-details">
+                  <strong>DPO Payment</strong>
+                  <p>Bank card and digital payment gateway</p>
+                </div>
+              </div>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" name="payment" value="card">
+              <div class="payment-card">
+                <div class="payment-icon">💰</div>
+                <div class="payment-details">
+                  <strong>Credit/Debit Card</strong>
+                  <p>Visa, Mastercard, or other cards</p>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Airtel Money Form -->
+        <div class="payment-form" id="airtelForm" style="display: block;">
+          <h3>Airtel Money Payment</h3>
+          <div class="form-group">
+            <label for="airtelNumber">Airtel Money Number *</label>
+            <input type="tel" id="airtelNumber" placeholder="+260 76 XXXXXX" required>
+          </div>
+          <div class="form-group">
+            <label for="airtelPin">Airtel PIN *</label>
+            <input type="password" id="airtelPin" placeholder="Enter your PIN" required>
+          </div>
+          <div class="info-box">
+            <p>You will receive a prompt on your Airtel Money to confirm payment.</p>
+          </div>
+        </div>
+
+        <!-- MTN Money Form -->
+        <div class="payment-form" id="mtnForm" style="display: none;">
+          <h3>MTN Money Payment</h3>
+          <div class="form-group">
+            <label for="mtnNumber">MTN Number *</label>
+            <input type="tel" id="mtnNumber" placeholder="+260 97 XXXXXX" required>
+          </div>
+          <div class="form-group">
+            <label for="mtnPin">MTN PIN *</label>
+            <input type="password" id="mtnPin" placeholder="Enter your PIN" required>
+          </div>
+          <div class="info-box">
+            <p>You will receive a prompt on your MTN to confirm payment.</p>
+          </div>
+        </div>
+
+        <!-- DPO Form -->
+        <div class="payment-form" id="dpoForm" style="display: none;">
+          <h3>DPO Bank Transfer</h3>
+          <div class="form-group">
+            <label for="cardNumber">Card Number *</label>
+            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expiry">Expiry Date *</label>
+              <input type="text" id="expiry" placeholder="MM/YY" required>
+            </div>
+            <div class="form-group">
+              <label for="cvv">CVV *</label>
+              <input type="text" id="cvv" placeholder="123" required maxlength="3">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="cardName">Cardholder Name *</label>
+            <input type="text" id="cardName" placeholder="John Doe" required>
+          </div>
+          <div class="info-box warning">
+            <p>⚠️ Your card information is secure and encrypted.</p>
+          </div>
+        </div>
+
+        <!-- Card Form -->
+        <div class="payment-form" id="cardForm" style="display: none;">
+          <h3>Credit/Debit Card</h3>
+          <div class="form-group">
+            <label for="cardNum">Card Number *</label>
+            <input type="text" id="cardNum" placeholder="1234 5678 9012 3456" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cardExp">Expiry Date *</label>
+              <input type="text" id="cardExp" placeholder="MM/YY" required>
+            </div>
+            <div class="form-group">
+              <label for="cardCvv">CVV *</label>
+              <input type="text" id="cardCvv" placeholder="123" required maxlength="3">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="cardHolder">Cardholder Name *</label>
+            <input type="text" id="cardHolder" placeholder="John Doe" required>
+          </div>
+        </div>
+
+        <!-- Terms & Conditions -->
+        <div class="form-section">
+          <label class="checkbox-label">
+            <input type="checkbox" id="terms" required>
+            I agree to the terms and conditions
+          </label>
+        </div>
+
+        <!-- Place Order Button -->
+        <button class="btn btn-primary btn-large" id="placeOrderBtn">Place Order</button>
+      </div>
+
+      <!-- Right side: Order Summary -->
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+        
+        <div class="summary-items" id="summaryItems">
+          <!-- Items populated by JavaScript -->
+        </div>
+
+        <div class="summary-totals">
+          <div class="summary-row">
+            <span>Subtotal:</span>
+            <span id="summarySubtotal">ZMW 0.00</span>
+          </div>
+          <div class="summary-row">
+            <span>Delivery Fee:</span>
+            <span id="deliveryFee">ZMW 50.00</span>
+          </div>
+          <div class="summary-row">
+            <span>Tax (10%):</span>
+            <span id="summaryTax">ZMW 0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total:</span>
+            <span id="summaryTotal">ZMW 0.00</span>
+          </div>
+        </div>
+
+        <div class="promo-code">
+          <input type="text" id="promoCode" placeholder="Enter promo code" class="promo-input">
+          <button class="btn btn-secondary btn-small" id="applyPromo">Apply</button>
+        </div>
+
+        <div class="summary-actions">
+          <a href="cart.html" class="btn btn-secondary">← Back to Cart</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Success Modal -->
+  <div class="modal" id="successModal" data-modal hidden>
+    <div class="modal-content modal-success">
+      <div class="success-icon">✓</div>
+      <h2>Order Placed Successfully!</h2>
+      <p id="orderMessage">Your order has been confirmed.</p>
+      <p class="order-id">Order ID: <strong id="orderId">ORD-2026-001</strong></p>
+      <button class="btn btn-primary" id="continueShoppingBtn">Continue Shopping</button>
+    </div>
+  </div>
+
+  <!-- Scrim overlay -->
+  <div class="scrim" data-scrim hidden></div>
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <small>© 2025 Prime Preview</small>
+    </div>
+  </footer>
+</body>
+</html>
