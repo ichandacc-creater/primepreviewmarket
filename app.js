@@ -102,6 +102,27 @@ const jewelryProducts = [
 // ---------- State ----------
 const state = { cart: {}, filter: 'all' };
 
+// Ensure an image modal exists on the page (inject for pages that don't include it)
+if (!document.getElementById('imageModal')) {
+  const modalHtml = `
+  <div class="modal" id="imageModal" data-modal hidden>
+    <div class="modal-content">
+      <button id="closeModal" class="modal-close">✕</button>
+      <div class="modal-body" style="text-align:center;">
+        <img id="modalImage" src="" alt="" style="max-width:90vw;max-height:90vh;transform:scale(1);transition:transform .12s;cursor:zoom-in">
+      </div>
+      <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:center;padding:.5rem 0;">
+        <button id="zoomOut" class="btn">−</button>
+        <button id="resetZoom" class="btn">Reset</button>
+        <button id="zoomIn" class="btn">+</button>
+      </div>
+    </div>
+  </div>`;
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = modalHtml;
+  document.body.appendChild(wrapper.firstElementChild);
+}
+
 const els = {
   grid: document.getElementById('productGrid'),
   count: document.querySelector('[data-cart-count]'),
@@ -147,7 +168,7 @@ function renderProducts(){
     if (p.variants) {
       return `
         <article class="product-card" data-id="${p.id}">
-          <div class="product-media clickable-image" data-img="${p.variants[0].img}"><img src="${p.variants[0].img}" alt="${p.title}" onerror="handleImgError(this,'${p.variants[0].img}')"></div>
+          <div class="product-media clickable-image" data-img="${p.variants[0].img}" style="cursor:pointer"><img src="${p.variants[0].img}" alt="${p.title}" onerror="handleImgError(this,'${p.variants[0].img}')" style="cursor:pointer"></div>
           <div class="product-meta">
             <div class="product-title">${p.title}</div>
             <div class="price">${format(p.price)}</div>
@@ -164,7 +185,7 @@ function renderProducts(){
     // Normal products
     return `
       <article class="product-card" data-id="${p.id}">
-        <div class="product-media clickable-image" data-img="${p.img}"><img src="${p.img}" alt="${p.title}" onerror="handleImgError(this,'${p.img}')"></div>
+        <div class="product-media clickable-image" data-img="${p.img}" style="cursor:pointer"><img src="${p.img}" alt="${p.title}" onerror="handleImgError(this,'${p.img}')" style="cursor:pointer"></div>
         <div class="product-meta">
           <div class="product-title">${p.title}</div>
           <div class="price">${format(p.price)}</div>
@@ -274,6 +295,9 @@ function openImageModal(imgSrc) {
     els.modalImage.style.transform = 'scale(1)';
     els.modalImage.dataset.scale = 1;
     els.modalImage.src = imgSrc;
+    // keep modal image within viewport
+    els.modalImage.style.maxWidth = '90vw';
+    els.modalImage.style.maxHeight = '90vh';
     els.modal.removeAttribute('hidden');
     document.body.style.overflow = 'hidden';
   }
@@ -415,6 +439,20 @@ document.addEventListener('click', e => {
   }
 });
 
+// Close modal when clicking outside modal-content (extra guard)
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('imageModal');
+  if (!modal || modal.hasAttribute('hidden')) return;
+  const content = modal.querySelector('.modal-content');
+  if (e.target === modal) return closeImageModal();
+  if (content && !content.contains(e.target) && modal.contains(e.target)) closeImageModal();
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeImageModal();
+});
+
 // ---------- Handle quantity input change ----------
 document.addEventListener('change', e => {
   const input = e.target.closest('input[data-qty]');
@@ -436,8 +474,16 @@ document.addEventListener('change', e => {
     const chosenImg = select.selectedOptions[0].dataset.img;
 
     const card = document.querySelector(`article[data-id="${id}"]`);
-    const imgEl = card.querySelector('.product-media img');
-    if(imgEl) imgEl.src = chosenImg;
+    if (card) {
+      const container = card.querySelector('.product-media');
+      const imgEl = card.querySelector('.product-media img');
+      // update both the container dataset and the img src so modal and UI use the selected color
+      if (container) container.dataset.img = chosenImg;
+      if (imgEl) {
+        imgEl.src = chosenImg;
+        imgEl.dataset.img = chosenImg;
+      }
+    }
   }
 });
 
