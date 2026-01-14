@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Stanley Cups — Prime Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body data-category="stanley">
+  <header class="site-header">
+    <a class="brand" href="index.html"><img src="assets/logo.png" alt="Prime Preview logo" class="logo"></a>
+    <nav class="nav">
+      <a href="phones.html">Phones</a>
+      <a href="accessories.html">Accessories</a>
+      <a href="clothing&shoes.html">Clothing</a>
+      <a href="jewelry.html">Jewelry</a>
+      <a href="stanley-cups.html" class="is-active">Stanley Cups</a>
+       <a href="cart.html" class="cart-btn">Cart</a>
+      
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>stanley-cups</h1>
+
+    <!-- Product grid populated dynamically by app.js -->
+    <div id="productGrid" class="product-grid"></div>
+  </main>
+
+  <!-- Image Modal for full-size image and zoom -->
+  <div class="modal" id="imageModal" data-modal hidden>
+    <div class="modal-content modal-zoom">
+      <button class="modal-close" id="closeModal">&times;</button>
+      <div class="zoom-controls">
+        <button id="zoomOut" class="btn btn-small">−</button>
+        <button id="resetZoom" class="btn btn-small">Reset</button>
+        <button id="zoomIn" class="btn btn-small">+</button>
+      </div>
+      <div class="modal-image-wrap">
+        <img id="modalImage" src="" alt="Full-size image" class="modal-image">
+      </div>
+    </div>
+  </div>
+
+  <!-- Scrim overlay -->
+  <div class="scrim" data-scrim hidden></div>
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <small>© 2025 Prime Preview</small>
+    </div>
+  </footer>
+</body>
+</html>
+

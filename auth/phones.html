@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Phones — Prime Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+
+<!-- IMPORTANT: tell app.js which category to render -->
+<body data-category="phones">
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Prime Preview logo" class="logo">
+      </a>
+      <nav class="nav">
+        <a href="phones.html" class="is-active">Phones</a>
+        <a href="accessories.html">Accessories</a>
+        <a href="clothing&shoes.html">Clothing & Shoes</a>
+        <a href="jewelry.html">Jewelry</a>
+        <a href="stanley-cups.html">Stanley Cups</a>
+      </nav>
+        <a href="cart.html" class="cart-btn">Cart</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Phones</h1>
+
+    <!-- Product grid populated dynamically by app.js -->
+    <div id="productGrid" class="product-grid"></div>
+  </main>
+
+  <!-- cart drawer removed: use cart.html for full cart -->
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <small>© 2025 Prime Preview</small>
+    </div>
+  </footer>
+</body>
+</html>
