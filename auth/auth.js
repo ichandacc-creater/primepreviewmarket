@@ -6,7 +6,7 @@ import {
   sendPasswordResetEmail,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, setDoc, doc, getDoc } 
+import { getFirestore, setDoc, doc, getDoc, collection, getDocs, query, where } 
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ✅ Firebase config
@@ -25,6 +25,10 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 console.log("Firebase initialized:", app);
+
+// Security: disable offline admin auto-login by default in production.
+// Set to `true` during local development only if you understand the risk.
+const ALLOW_OFFLINE_ADMIN = false;
 
 // 🔹 Sign Up with User Roles
 window.signUp = async function() {
@@ -106,7 +110,7 @@ window.signUp = async function() {
     // Cache profile locally so login can work offline or if Firestore is unreachable
     try {
       const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
-      cache[user.uid] = userData;
+      cache[user.uid] = { ...userData, uid: user.uid, email };
       localStorage.setItem('users-cache', JSON.stringify(cache));
     } catch (e) {
       console.warn('Could not write users-cache', e);
@@ -151,25 +155,44 @@ window.login = async function() {
     try {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (!userDoc.exists()) {
-        document.getElementById("auth-message").innerText = "User profile not found. Contact support.";
-        return;
+        console.warn('User document missing for uid:', user.uid);
+        // try to find a profile by email as a best-effort recovery
+        try {
+          const q = query(collection(db, 'users'), where('email', '==', email));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            const d = snap.docs[0];
+            userData = { ...d.data(), uid: d.id };
+            console.info('Recovered profile by email from Firestore for', email);
+          } else {
+            document.getElementById("auth-message").innerText = "User profile not found. Contact support.";
+            return;
+          }
+        } catch (qErr) {
+          console.warn('Email lookup failed:', qErr);
+          document.getElementById("auth-message").innerText = "User profile not found. Contact support.";
+          return;
+        }
+      } else {
+        userData = userDoc.data();
+
+        // update local cache with latest profile
+        try {
+          const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
+          cache[user.uid] = { ...userData, uid: user.uid, email: user.email };
+          localStorage.setItem('users-cache', JSON.stringify(cache));
+        } catch (e) { console.warn('Could not update users-cache', e); }
       }
-      userData = userDoc.data();
+
     } catch (err) {
-      console.warn('Could not fetch user profile from Firestore:', err && err.message);
+      console.warn('Could not fetch user profile from Firestore (getDoc failed):', err && err.message);
       // Try local cache as fallback
       try {
         const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
-        userData = cache[user.uid] || null;
+        // Prefer matching by uid then fallback to email match
+        userData = cache[user?.uid] || Object.values(cache).find(u => u && (u.email === email)) || null;
         if (userData) {
-          console.info('Using cached profile for', user.uid);
-        } else if (email) {
-          // try finding cached profile by email (helps if uid mismatch)
-          const found = Object.values(cache).find(u => u && (u.email === email || u.email === (email + '')));
-          if (found) {
-            userData = found;
-            console.info('Using cached profile found by email for', email);
-          }
+          console.info('Using cached profile for', userData.uid || email);
         }
         console.debug('users-cache keys:', Object.keys(cache || {}));
       } catch (e) {
@@ -216,10 +239,9 @@ window.login = async function() {
     if (isNetworkErr) {
       try {
         const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
-        const cachedByUid = cache[user?.uid] || null;
-        const cachedByEmail = Object.values(cache).find(u => u && u.email === email);
-        const cached = cachedByUid || cachedByEmail || null;
-        if (cached && cached.userRole === 'admin') {
+        const cachedByEmail = Object.values(cache).find(u => u && u.email === email) || null;
+        const cached = cachedByEmail || null;
+        if (ALLOW_OFFLINE_ADMIN && cached && cached.userRole === 'admin') {
           // development convenience: allow offline admin login using cached profile
           localStorage.setItem('currentUser', JSON.stringify({ uid: cached.uid || 'local-'+Date.now(), email: cached.email, role: 'admin', name: cached.businessname || cached.firstname || 'Admin' }));
           document.getElementById('auth-message').innerText = 'Offline — signed in using cached admin profile.';
@@ -253,12 +275,34 @@ window.adminLogin = async function() {
     try {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (!userDoc.exists()) {
-        document.getElementById("admin-auth-message").innerText = "User profile not found. Contact support.";
-        return;
+        console.warn('Admin user document missing for uid:', user.uid);
+        try {
+          const q = query(collection(db, 'users'), where('email', '==', email));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            const d = snap.docs[0];
+            userData = { ...d.data(), uid: d.id };
+            console.info('Recovered admin profile by email from Firestore for', email);
+          } else {
+            document.getElementById("admin-auth-message").innerText = "User profile not found. Contact support.";
+            return;
+          }
+        } catch (qErr) {
+          console.warn('Admin email lookup failed:', qErr);
+          document.getElementById("admin-auth-message").innerText = "User profile not found. Contact support.";
+          return;
+        }
+      } else {
+        userData = userDoc.data();
+        try {
+          const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
+          cache[user.uid] = { ...userData, uid: user.uid, email: user.email };
+          localStorage.setItem('users-cache', JSON.stringify(cache));
+        } catch (e) { console.warn('Could not update users-cache for admin', e); }
       }
-      userData = userDoc.data();
+
     } catch (err) {
-      // fallback to cache
+      // fallback to cache by uid then email
       try {
         const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
         userData = cache[user.uid] || Object.values(cache).find(u => u && u.email === email) || null;
@@ -298,12 +342,34 @@ window.supplierLogin = async function() {
     try {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (!userDoc.exists()) {
-        document.getElementById("supplier-auth-message").innerText = "User profile not found. Contact support.";
-        return;
+        console.warn('Supplier user document missing for uid:', user.uid);
+        try {
+          const q = query(collection(db, 'users'), where('email', '==', email));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            const d = snap.docs[0];
+            userData = { ...d.data(), uid: d.id };
+            console.info('Recovered supplier profile by email from Firestore for', email);
+          } else {
+            document.getElementById("supplier-auth-message").innerText = "User profile not found. Contact support.";
+            return;
+          }
+        } catch (qErr) {
+          console.warn('Supplier email lookup failed:', qErr);
+          document.getElementById("supplier-auth-message").innerText = "User profile not found. Contact support.";
+          return;
+        }
+      } else {
+        userData = userDoc.data();
+        try {
+          const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
+          cache[user.uid] = { ...userData, uid: user.uid, email: user.email };
+          localStorage.setItem('users-cache', JSON.stringify(cache));
+        } catch (e) { console.warn('Could not update users-cache for supplier', e); }
       }
-      userData = userDoc.data();
+
     } catch (err) {
-      // fallback to cache
+      // fallback to cache by uid then email
       try {
         const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
         userData = cache[user.uid] || Object.values(cache).find(u => u && u.email === email) || null;
