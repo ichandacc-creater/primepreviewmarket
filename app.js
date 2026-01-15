@@ -139,6 +139,83 @@ const els = {
   checkoutBtn: document.getElementById('checkout-btn'),
 };
 
+// Inject account details modal if missing
+if (!document.getElementById('accountModal')) {
+  const accHtml = `
+  <div class="modal" id="accountModal" data-modal hidden>
+    <div class="modal-content" style="max-width:520px;padding:16px;background:var(--surface);border-radius:12px;">
+      <button id="closeAccountModal" class="modal-close">✕</button>
+      <h3 style="margin-top:0;">Account Details</h3>
+      <div id="accountDetails" style="color:var(--text);font-size:0.95rem;line-height:1.4"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;">
+        <a href="auth.html" class="btn btn-secondary">Manage Account</a>
+        <button id="signOutBtn" class="btn btn-danger">Sign Out</button>
+      </div>
+    </div>
+  </div>`;
+  const w = document.createElement('div'); w.innerHTML = accHtml; document.body.appendChild(w.firstElementChild);
+}
+
+function getStoredProfile() {
+  const cur = localStorage.getItem('currentUser');
+  let profile = cur ? JSON.parse(cur) : null;
+  try {
+    const cache = JSON.parse(localStorage.getItem('users-cache') || '{}');
+    if (profile && cache[profile.uid]) {
+      profile = { ...profile, ...cache[profile.uid] };
+    } else if (profile && profile.email) {
+      const found = Object.values(cache).find(u => u && u.email === profile.email);
+      if (found) profile = { ...profile, ...found };
+    }
+    // If no currentUser but a single cached profile exists, use it as a fallback (dev convenience)
+    if (!profile) {
+      const keys = Object.keys(cache || {});
+      if (keys.length === 1) {
+        const only = cache[keys[0]];
+        profile = { uid: only.uid || keys[0], email: only.email, name: only.firstname || only.businessname || only.name || '', ...only };
+        console.info('Using sole users-cache entry as profile fallback');
+      }
+    }
+  } catch (e) {
+    console.warn('users-cache read failed', e);
+  }
+  return profile;
+}
+
+function showAccountModal() {
+  const modal = document.getElementById('accountModal');
+  const details = document.getElementById('accountDetails');
+  const profile = getStoredProfile();
+  if (!modal || !details) return;
+  if (!profile) {
+    details.innerHTML = `<p class="muted">Not signed in. <a href="auth.html">Sign in</a> or create an account.</p>`;
+  } else {
+    details.innerHTML = `
+      <p><strong>Name:</strong> ${profile.firstname || profile.businessname || profile.name || ''}</p>
+      <p><strong>Email:</strong> ${profile.email || ''}</p>
+      <p><strong>Phone:</strong> ${profile.phone || profile.businessphone || ''}</p>
+      <p><strong>Address:</strong> ${profile.address || profile.businessaddress || (profile.province ? profile.province + (profile.district ? ', ' + profile.district : '') : '')}</p>
+      <p><strong>Role:</strong> ${profile.role || profile.userRole || ''}</p>
+    `;
+  }
+  modal.removeAttribute('hidden'); document.body.style.overflow = 'hidden';
+}
+
+function closeAccountModal() {
+  const modal = document.getElementById('accountModal'); if (!modal) return; modal.setAttribute('hidden', ''); document.body.style.overflow = '';
+}
+
+document.addEventListener('click', (e) => {
+  const t = e.target;
+  // Intercept Account links (commonly linking to auth/index2.html or having data-account)
+  const a = t.closest('a');
+  if (a && (a.getAttribute('href') || '').includes('auth/index2.html') || t.closest('[data-account]')) {
+    e.preventDefault(); showAccountModal(); return;
+  }
+  if (t.id === 'closeAccountModal') closeAccountModal();
+  if (t.id === 'signOutBtn') { localStorage.removeItem('currentUser'); closeAccountModal(); window.location.href = 'auth.html'; }
+});
+
 // Load cart from localStorage
 function loadCart() {
   const saved = localStorage.getItem('cart');
@@ -307,6 +384,8 @@ function closeImageModal() {
   if (els.modal) {
     els.modal.setAttribute('hidden', '');
     document.body.style.overflow = '';
+    // remove image-active state from any product cards
+    document.querySelectorAll('.product-card.image-active').forEach(c => c.classList.remove('image-active'));
   }
 }
 
@@ -363,7 +442,14 @@ document.addEventListener('click', e => {
 
   // Image modal click
   if(t.closest('.clickable-image')) {
-    const imgSrc = t.closest('.clickable-image').dataset.img;
+    const container = t.closest('.clickable-image');
+    const imgSrc = container.dataset.img;
+
+    // Clear previous active states and mark this card active
+    document.querySelectorAll('.product-card.image-active').forEach(c => c.classList.remove('image-active'));
+    const card = container.closest('.product-card');
+    if (card) card.classList.add('image-active');
+
     openImageModal(imgSrc);
   }
 
@@ -379,17 +465,32 @@ document.addEventListener('click', e => {
     const allProducts = [...phoneProducts, ...stanleyProducts, ...clothingProducts, ...accessoriesProducts, ...jewelryProducts];
     const p = allProducts.find(x=>x.id===id);
 
-    let chosenColor = null, chosenImg = p.img;
+    // Determine chosen color / image for variants (Stanley cup)
+    let chosenColor = null, chosenImg = (p && p.img) || '';
     const select = document.querySelector(`select[data-color="${id}"]`);
-    if(select){
+    if (select) {
       chosenColor = select.value;
       chosenImg = select.selectedOptions[0].dataset.img;
     }
 
-    state.cart[id] = state.cart[id] || { ...p, qty:0 };
-    state.cart[id].qty++;
-    state.cart[id].color = chosenColor;
-    state.cart[id].img = chosenImg;
+    // Use a composite cart key for variant-specific items so each color is separate
+    const cartKey = chosenColor ? `${id}::${chosenColor}` : id;
+
+    if (!state.cart[cartKey]) {
+      // Create a new cart entry tailored for the variant or normal product
+      const item = {
+        id: cartKey,
+        originalId: p.id,
+        title: p.title + (chosenColor ? ` — ${chosenColor}` : ''),
+        price: p.price,
+        qty: 0,
+        img: chosenImg || p.img || '',
+        color: chosenColor || null
+      };
+      state.cart[cartKey] = item;
+    }
+
+    state.cart[cartKey].qty++;
 
     saveCart();
     renderProducts();
@@ -492,4 +593,68 @@ loadCart();
 renderProducts();
 renderCart();
 renderCartPage();
+
+// Header controls: ensure logo navigates home and show logout when signed in
+function ensureHeaderControls() {
+  // Make all brand links go to the site home
+  document.querySelectorAll('.brand').forEach(b => {
+    try {
+      b.setAttribute('href', 'index.html');
+      b.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'index.html'; });
+    } catch (e) { /* ignore */ }
+  });
+
+  // Inject logout button if missing
+  document.querySelectorAll('.site-header').forEach(header => {
+    if (header.querySelector('#headerLogoutBtn')) return;
+    const nav = header.querySelector('.nav') || header;
+    const btn = document.createElement('button');
+    btn.id = 'headerLogoutBtn';
+    btn.className = 'btn btn-secondary';
+    btn.textContent = 'Logout';
+    btn.style.marginLeft = '12px';
+    btn.addEventListener('click', () => {
+      localStorage.removeItem('currentUser');
+      // update UI then redirect to auth page
+      updateHeaderLogoutVisibility();
+      window.location.href = 'auth.html';
+    });
+    // place after nav so it appears on the right
+    nav && nav.parentNode ? nav.parentNode.insertBefore(btn, nav.nextSibling) : header.appendChild(btn);
+  });
+
+  updateHeaderLogoutVisibility();
+}
+
+function updateHeaderLogoutVisibility() {
+  const cur = localStorage.getItem('currentUser');
+  const btn = document.getElementById('headerLogoutBtn');
+  if (btn) btn.style.display = cur ? 'inline-flex' : 'none';
+
+  // Optionally show user's name next to the nav
+  const existing = document.querySelector('.header-username');
+  if (cur) {
+    const user = JSON.parse(cur);
+    if (!existing) {
+      const el = document.createElement('span');
+      el.className = 'header-username';
+      el.textContent = user.name || user.email || '';
+      el.style.marginLeft = '8px';
+      el.style.fontWeight = '600';
+      // insert near nav
+      const header = document.querySelector('.site-header');
+      const nav = header && header.querySelector('.nav');
+      if (nav && nav.parentNode) nav.parentNode.insertBefore(el, nav.nextSibling);
+      else header && header.appendChild(el);
+    }
+  } else if (existing) {
+    existing.remove();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  ensureHeaderControls();
+  // update visibility if localStorage changes in another tab
+  window.addEventListener('storage', () => updateHeaderLogoutVisibility());
+});
 

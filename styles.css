@@ -519,6 +519,19 @@ body{
   transform: scale(1.05);
 }
 
+/* When the product image is active (clicked), make its buttons prominent */
+.product-card.image-active .btn {
+  background: var(--primary) !important;
+  color: var(--primary-ink) !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(79,124,255,.22);
+}
+
+.product-card.image-active .btn.btn-secondary {
+  background: var(--primary) !important;
+  color: white !important;
+}
+
 /* ===== Checkout Page Styles ===== */
 .checkout-container {
   margin-top: var(--space-4);
@@ -866,5 +879,52 @@ body{
   color: var(--text);
   font-family: 'Courier New', monospace;
 }
+
+
+/* ===== Responsive tweaks (mobile first) ===== */
+@media (max-width: 1024px) {
+  :root { --container: min(960px, 96vw); }
+  .hero-content { grid-template-columns: 1fr; gap: var(--space-3); }
+  .hero-media { order: 2; }
+  .hero-copy { order: 1; }
+  .category-grid { grid-template-columns: repeat(3, 1fr); }
+  .product-grid { grid-template-columns: repeat(3, 1fr); }
+  .header-bar { padding: var(--space-2); }
+}
+
+@media (max-width: 768px) {
+  :root { --container: 96vw; }
+  .header-bar { flex-wrap: wrap; align-items: center; gap: 10px; }
+  .nav { width: 100%; justify-content: center; order: 3; display: flex; flex-wrap: wrap; gap: 8px; }
+  .brand { flex: 1 1 100%; text-align: left; }
+  .cart-btn { order: 2; margin-left: 0; }
+  .hero-content { grid-template-columns: 1fr; }
+  .category-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-2); }
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-2); }
+  .product-card { padding: var(--space-2); }
+  .product-media { aspect-ratio: 4/3; }
+  .container { padding-inline: 12px; }
+}
+
+@media (max-width: 480px) {
+  :root { --container: 100vw; }
+  .header-bar { padding: var(--space-2); }
+  .brand { font-size: 1rem; }
+  .nav { gap: 6px; }
+  .hero-copy h1 { font-size: clamp(1.4rem, 6vw, 2rem); }
+  .category-grid { grid-template-columns: 1fr; }
+  .product-grid { grid-template-columns: 1fr; }
+  .product-media { aspect-ratio: 16/9; }
+  .product-card { padding: var(--space-2); border-radius: 12px; }
+  .btn { padding: 10px 14px; }
+  .cart-drawer { width: 100vw; }
+  .cart-item { grid-template-columns: 56px 1fr auto; }
+  .cart-header { grid-template-columns: 1fr 1fr; }
+  .checkout-wrapper { grid-template-columns: 1fr; }
+}
+
+/* Small improvements for touch targets */
+.nav a, .chip, .btn, .icon-btn { touch-action: manipulation; }
+.nav a { padding: 10px 12px; border-radius: 8px; }
 
 

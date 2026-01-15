@@ -1,0 +1,39 @@
+[debug] [2026-01-15T17:42:16.615Z] ----------------------------------------------------------------------
+[debug] [2026-01-15T17:42:16.622Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\USER\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js login
+[debug] [2026-01-15T17:42:16.622Z] CLI Version:   15.3.0
+[debug] [2026-01-15T17:42:16.623Z] Platform:      win32
+[debug] [2026-01-15T17:42:16.623Z] Node Version:  v24.12.0
+[debug] [2026-01-15T17:42:16.623Z] Time:          Thu Jan 15 2026 19:42:16 GMT+0200 (South Africa Standard Time)
+[debug] [2026-01-15T17:42:16.623Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-01-15T17:42:16.628Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[info] Already logged in as ichandacc@gmail.com
+[debug] [2026-01-15T17:42:26.748Z] Error: Timed out.
+    at Timeout._onTimeout (C:\Users\USER\AppData\Roaming\npm\node_modules\firebase-tools\lib\utils.js:308:49)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2026-01-15T17:42:29.628Z] ----------------------------------------------------------------------
+[debug] [2026-01-15T17:42:29.641Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\USER\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2026-01-15T17:42:29.642Z] CLI Version:   15.3.0
+[debug] [2026-01-15T17:42:29.642Z] Platform:      win32
+[debug] [2026-01-15T17:42:29.642Z] Node Version:  v24.12.0
+[debug] [2026-01-15T17:42:29.643Z] Time:          Thu Jan 15 2026 19:42:29 GMT+0200 (South Africa Standard Time)
+[debug] [2026-01-15T17:42:29.643Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-01-15T17:42:29.648Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\USER\Downloads\primepreviewmarket-main\primepreviewmarket-main
+
+[debug] [2026-01-15T17:43:04.229Z] *** [apiv2] error from fetch(https://firebase-public.firebaseio.com/cli.json, {"headers":{},"method":"GET"}): FetchError: request to https://firebase-public.firebaseio.com/cli.json failed, reason: connect ETIMEDOUT 192.168.50.31:443
+[warn] !  Unable to fetch the CLI MOTD and remote config. This is not a fatal error, but may indicate an issue with your network connection. 
+[debug] [2026-01-15T17:43:04.232Z] Failed to fetch MOTD FirebaseError: Failed to make request to https://firebase-public.firebaseio.com/cli.json

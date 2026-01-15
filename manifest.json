@@ -1,0 +1,12 @@
+{
+  "name": "Prime Preview Market",
+  "short_name": "PrimePreview",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a58ca",
+  "icons": [
+    { "src": "assets/shopping-bag-logo-icon-design-template-46700355.avif", "sizes": "192x192", "type": "image/avif" },
+    { "src": "assets/Ascis1.avif", "sizes": "512x512", "type": "image/avif" }
+  ]
+}
