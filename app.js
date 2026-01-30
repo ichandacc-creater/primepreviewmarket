@@ -869,6 +869,8 @@ document.addEventListener('DOMContentLoaded', () => {
     mobileNav.classList.toggle('is-open', open);
     if (scrim) scrim.hidden = !open;
     mobileNav.hidden = !open;
+    // keep toggle aria state in sync for accessibility
+    if (mobileToggle) mobileToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
   mobileToggle && mobileToggle.addEventListener('click', () => { openMobileNav(true); mobileToggle.setAttribute('aria-expanded','true'); });
   // Close mobile nav and update toggle state when nav closes
