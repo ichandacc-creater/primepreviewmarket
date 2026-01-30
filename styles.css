@@ -953,6 +953,8 @@ body{
   .brand { flex: 1 1 100%; text-align: left; }
   .cart-btn { order: 2; margin-left: 0; }
   .hero-content { grid-template-columns: 1fr; }
+  /* Hide hero action buttons on mobile — use the mobile nav dropdown instead */
+  .hero-actions { display: none !important; }
   .category-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-2); }
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-2); }
   .product-card { padding: var(--space-2); }
