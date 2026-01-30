@@ -18,12 +18,29 @@
         <a href="cart.html" class="cart-btn">Cart <span data-cart-count>0</span></a>
       </nav>
     </div>
+      <button id="mobileNavToggle" class="mobile-toggle" aria-label="Open menu">Shop with us</button>
   </header>
+
+  <nav id="mobileNav" class="mobile-nav" aria-hidden="true" hidden>
+    <button id="mobileNavClose" class="mobile-nav-close" aria-label="Close menu">✕</button>
+    <ul class="mobile-nav-list">
+      <li><a href="phones.html">Phones</a></li>
+      <li><a href="accessories.html">Accessories</a></li>
+      <li><a href="clothing-shoes.html">Clothing &amp; Shoes</a></li>
+      <li><a href="jewelry.html">Jewelry</a></li>
+      <li><a href="stanley-cups.html">Stanley Cups</a></li>
+      <li><a href="consoles.html">Consoles</a></li>
+      <li><a href="cart.html" class="badge">Cart <span data-cart-count>0</span></a></li>
+    </ul>
+    <div id="mobileAuth" class="mobile-auth" style="margin-top:1rem;"></div>
+  </nav>
 
   <main class="container">
     <h1>About Prime Preview</h1>
     <p>We’re a Zambia‑based e‑commerce store bringing premium tech closer to you. Our mission is to deliver modern devices with trust, clarity, and service that feels human.</p>
   </main>
+
+  <div class="scrim" data-scrim hidden></div>
 
   <footer class="site-footer">
     <div class="container footer-bottom">

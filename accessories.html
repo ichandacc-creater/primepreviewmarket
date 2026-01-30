@@ -1,7 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Accessories — Prime Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+
+<!-- IMPORTANT: tell app.js which category to render -->
 <body data-category="accessories">
-  <!-- same header/nav -->
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Prime Preview logo" class="logo">
+      </a>
+      <nav class="nav">
+        <a href="phones.html">Phones</a>
+        <a href="accessories.html" class="is-active">Accessories</a>
+        <a href="clothing&shoes.html">Clothing &amp; Shoes</a>
+        <a href="jewelry.html">Jewelry</a>
+        <a href="stanley-cups.html">Stanley Cups</a>
+        <a href="consoles.html">Consoles</a>
+      </nav>
+      <a href="cart.html" class="cart-btn">Cart <span data-cart-count>0</span></a>
+    </div>
+    <button id="mobileNavToggle" class="mobile-toggle" aria-label="Open menu">Shop with us</button>
+  </header>
+
+  <nav id="mobileNav" class="mobile-nav" aria-hidden="true" hidden>
+    <button id="mobileNavClose" class="mobile-nav-close" aria-label="Close menu">✕</button>
+    <ul class="mobile-nav-list">
+      <li><a href="phones.html">Phones</a></li>
+      <li><a href="accessories.html">Accessories</a></li>
+      <li><a href="clothing-shoes.html">Clothing &amp; Shoes</a></li>
+      <li><a href="jewelry.html">Jewelry</a></li>
+      <li><a href="stanley-cups.html">Stanley Cups</a></li>
+      <li><a href="consoles.html">Consoles</a></li>
+      <li><a href="cart.html" class="badge">Cart <span data-cart-count>0</span></a></li>
+    </ul>
+    <div id="mobileAuth" class="mobile-auth" style="margin-top:1rem;"></div>
+  </nav>
+
   <main class="container">
     <h1>Accessories</h1>
+
+    <!-- Product grid populated dynamically by app.js -->
     <div id="productGrid" class="product-grid"></div>
   </main>
+
+  <!-- cart drawer removed: use cart.html for full cart -->
+
+  <div class="scrim" data-scrim hidden></div>
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <small>© 2025 Prime Preview</small>
+    </div>
+  </footer>
 </body>
+</html>
