@@ -870,7 +870,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scrim) scrim.hidden = !open;
     mobileNav.hidden = !open;
   }
-  mobileToggle && mobileToggle.addEventListener('click', () => openMobileNav(true));
+  mobileToggle && mobileToggle.addEventListener('click', () => { openMobileNav(true); mobileToggle.setAttribute('aria-expanded','true'); });
+  // Close mobile nav and update toggle state when nav closes
+  if (mobileNavClose) mobileNavClose.addEventListener('click', () => mobileToggle && mobileToggle.setAttribute('aria-expanded','false')); 
+  if (scrim) scrim.addEventListener('click', () => mobileToggle && mobileToggle.setAttribute('aria-expanded','false'));
   mobileNavClose && mobileNavClose.addEventListener('click', () => openMobileNav(false));
   if (scrim) scrim.addEventListener('click', () => openMobileNav(false));
   mobileNav && mobileNav.addEventListener('click', (e) => {
