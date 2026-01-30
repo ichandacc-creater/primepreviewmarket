@@ -134,8 +134,8 @@ if (!document.getElementById('imageModal')) {
       <button id="closeModal" class="modal-close">✕</button>
 
       <!-- Gallery nav (prev/next) -->
-      <button id="modalPrev" class="modal-nav" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:28px;padding:8px 12px;display:none;">‹</button>
-      <button id="modalNext" class="modal-nav" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:28px;padding:8px 12px;display:none;">›</button>
+      <button id="modalPrev" class="modal-nav" aria-label="Previous image" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:28px;padding:8px 12px;display:none;">‹</button>
+      <button id="modalNext" class="modal-nav" aria-label="Next image" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:28px;padding:8px 12px;display:none;">›</button>
 
       <div class="modal-body" style="text-align:center;">
         <img id="modalImage" src="" alt="" style="max-width:90vw;max-height:90vh;transform:scale(1);transition:transform .12s;cursor:zoom-in">
@@ -428,8 +428,8 @@ function showModalImageAt(index) {
 
   const prev = document.getElementById('modalPrev');
   const next = document.getElementById('modalNext');
-  if (prev) prev.style.display = modalGallery.length > 1 ? 'block' : 'none';
-  if (next) next.style.display = modalGallery.length > 1 ? 'block' : 'none';
+  if (prev) prev.style.display = modalGallery.length > 1 ? 'flex' : 'none';
+  if (next) next.style.display = modalGallery.length > 1 ? 'flex' : 'none';
 
   if (els.modal) { els.modal.removeAttribute('hidden'); document.body.style.overflow = 'hidden'; }
 }
@@ -702,9 +702,17 @@ document.addEventListener('click', (e) => {
   if (content && !content.contains(e.target) && modal.contains(e.target)) closeImageModal();
 });
 
-// Close modal on Escape key
+// Close modal on Escape key and navigate gallery with arrow keys
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeImageModal();
+  if (e.key === 'Escape') return closeImageModal();
+  if ((e.key === 'ArrowLeft' || e.key === 'Left') && modalGallery && modalGallery.length) {
+    modalGalleryIndex = (modalGalleryIndex - 1 + modalGallery.length) % modalGallery.length;
+    showModalImageAt(modalGalleryIndex);
+  }
+  if ((e.key === 'ArrowRight' || e.key === 'Right') && modalGallery && modalGallery.length) {
+    modalGalleryIndex = (modalGalleryIndex + 1) % modalGallery.length;
+    showModalImageAt(modalGalleryIndex);
+  }
 });
 
 // ---------- Handle quantity input change ----------
@@ -836,5 +844,24 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) {
     console.warn('Failed to process post-login redirect:', e);
   }
+
+  // Mobile nav toggle (right-side slide-in)
+  const mobileToggle = document.getElementById('mobileNavToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  const mobileNavClose = document.getElementById('mobileNavClose');
+  const scrim = document.querySelector('[data-scrim]');
+  function openMobileNav(open = true) {
+    if (!mobileNav) return;
+    mobileNav.classList.toggle('is-open', open);
+    if (scrim) scrim.hidden = !open;
+    mobileNav.hidden = !open;
+  }
+  mobileToggle && mobileToggle.addEventListener('click', () => openMobileNav(true));
+  mobileNavClose && mobileNavClose.addEventListener('click', () => openMobileNav(false));
+  if (scrim) scrim.addEventListener('click', () => openMobileNav(false));
+  mobileNav && mobileNav.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (a) openMobileNav(false);
+  });
 });
 
