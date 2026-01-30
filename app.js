@@ -2,6 +2,12 @@
 
 function format(n){ return `ZMW ${n.toFixed(2)}`; }
 
+// Truncate helper for descriptions
+function truncate(str, n = 120) {
+  if (!str) return '';
+  return str.length > n ? str.slice(0, n).trim() + '…' : str;
+}
+
 // Try alternate filenames when an image fails to load.
 window.handleImgError = function(imgEl, origPath){
   if (!imgEl || imgEl._tried) return imgEl && (imgEl.src = 'assets/hero-banner.jpg');
@@ -99,6 +105,24 @@ const jewelryProducts = [
   { id:'ring1', brand:'jewelry', title:'Silver Ring', price: 1200, img:'assets/1.jpg' },
 ];
 
+// Consoles category (sample products)
+const consolesProducts = [
+  { id:'ps5', brand:'console', title:'PlayStation 5', price: 13500, img:'assets/ps5 (1).jpeg', images: ['assets/ps5 (1).jpeg','assets/ps5 (2).jpeg'] },
+  { id:'xboxx', brand:'console', title:'Xbox Series X', price: 11000, img:'assets/xbox.jpg', images: ['assets/xbox.jpg','assets/xbox img2.jpg'] },
+  { id:'switch', brand:'console', title:'Nintendo Switch', price: 6000, img:'assets/nintendo.webp', images: ['assets/nintendo.webp','assets/switch.svg'] },
+];
+
+// Expose consoles list globally so `auth/app.js` can reuse it
+window.consolesProducts = consolesProducts;
+
+// Ensure every product has a description (default where missing)
+(function ensureDescriptions(){
+  const lists = [phoneProducts, stanleyProducts, clothingProducts, accessoriesProducts, jewelryProducts, consolesProducts];
+  lists.forEach(list => list.forEach(p => {
+    if (!p.description) p.description = `High-quality ${p.title} from Prime Preview.`;
+  }));
+})();
+
 // ---------- State ----------
 const state = { cart: {}, filter: 'all' };
 
@@ -106,11 +130,21 @@ const state = { cart: {}, filter: 'all' };
 if (!document.getElementById('imageModal')) {
   const modalHtml = `
   <div class="modal" id="imageModal" data-modal hidden>
-    <div class="modal-content">
+    <div class="modal-content" style="position:relative;">
       <button id="closeModal" class="modal-close">✕</button>
+
+      <!-- Gallery nav (prev/next) -->
+      <button id="modalPrev" class="modal-nav" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:28px;padding:8px 12px;display:none;">‹</button>
+      <button id="modalNext" class="modal-nav" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:28px;padding:8px 12px;display:none;">›</button>
+
       <div class="modal-body" style="text-align:center;">
         <img id="modalImage" src="" alt="" style="max-width:90vw;max-height:90vh;transform:scale(1);transition:transform .12s;cursor:zoom-in">
       </div>
+
+      <div style="text-align:center;margin-top:6px;color:var(--muted);font-size:0.9rem;">
+        <span id="modalGalleryIndicator"></span>
+      </div>
+
       <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:center;padding:.5rem 0;">
         <button id="zoomOut" class="btn">−</button>
         <button id="resetZoom" class="btn">Reset</button>
@@ -207,9 +241,10 @@ function closeAccountModal() {
 
 document.addEventListener('click', (e) => {
   const t = e.target;
-  // Intercept Account links (commonly linking to auth/index2.html or having data-account)
+  // Intercept Account links (commonly linking to auth/index2.html or index.html or having data-account)
   const a = t.closest('a');
-  if (a && (a.getAttribute('href') || '').includes('auth/index2.html') || t.closest('[data-account]')) {
+  const href = a && (a.getAttribute('href') || '') || '';
+  if ((a && (href.includes('auth/index2.html') || href.includes('index.html'))) || t.closest('[data-account]')) {
     e.preventDefault(); showAccountModal(); return;
   }
   if (t.id === 'closeAccountModal') closeAccountModal();
@@ -239,6 +274,7 @@ function renderProducts(){
   if (category === 'clothing') list = clothingProducts;
   if (category === 'accessories') list = accessoriesProducts;
   if (category === 'jewelry') list = jewelryProducts;
+  if (category === 'consoles') list = consolesProducts;
 
   els.grid.innerHTML = list.map(p => {
     // Special handling for Stanley Cup with variants
@@ -247,7 +283,10 @@ function renderProducts(){
         <article class="product-card" data-id="${p.id}">
           <div class="product-media clickable-image" data-img="${p.variants[0].img}" style="cursor:pointer"><img src="${p.variants[0].img}" alt="${p.title}" onerror="handleImgError(this,'${p.variants[0].img}')" style="cursor:pointer"></div>
           <div class="product-meta">
-            <div class="product-title">${p.title}</div>
+            <div>
+              <div class="product-title">${p.title}</div>
+              <div class="product-desc">${truncate(p.description)}</div>
+            </div>
             <div class="price">${format(p.price)}</div>
           </div>
           <label class="muted">Choose color:</label>
@@ -260,11 +299,16 @@ function renderProducts(){
     }
 
     // Normal products
+    const galleryAttr = p.images && p.images.length ? `data-gallery='${JSON.stringify(p.images)}' data-img="${p.images[0]}"` : `data-img="${p.img}"`;
+    const imgSrc = p.images && p.images.length ? p.images[0] : p.img;
     return `
       <article class="product-card" data-id="${p.id}">
-        <div class="product-media clickable-image" data-img="${p.img}" style="cursor:pointer"><img src="${p.img}" alt="${p.title}" onerror="handleImgError(this,'${p.img}')" style="cursor:pointer"></div>
+        <div class="product-media clickable-image" ${galleryAttr} style="cursor:pointer"><img src="${imgSrc}" alt="${p.title}" onerror="handleImgError(this,'${imgSrc}')" style="cursor:pointer"></div>
         <div class="product-meta">
-          <div class="product-title">${p.title}</div>
+          <div>
+            <div class="product-title">${p.title}</div>
+            <div class="product-desc">${truncate(p.description)}</div>
+          </div>
           <div class="price">${format(p.price)}</div>
         </div>
         <button class="btn btn-primary" data-add="${p.id}">Add to cart</button>
@@ -365,19 +409,55 @@ function updateCartTotals(){
   if (els.total) els.total.textContent = format(total);
 }
 
-// ---------- Image Modal ----------
-function openImageModal(imgSrc) {
-  if (els.modal) {
-    // reset zoom state
-    els.modalImage.style.transform = 'scale(1)';
-    els.modalImage.dataset.scale = 1;
-    els.modalImage.src = imgSrc;
-    // keep modal image within viewport
-    els.modalImage.style.maxWidth = '90vw';
-    els.modalImage.style.maxHeight = '90vh';
-    els.modal.removeAttribute('hidden');
-    document.body.style.overflow = 'hidden';
+// ---------- Image Modal (with gallery support) ----------
+let modalGallery = null;
+let modalGalleryIndex = 0;
+
+function showModalImageAt(index) {
+  if (!modalGallery || !modalGallery.length) return;
+  modalGalleryIndex = Math.max(0, Math.min(index, modalGallery.length - 1));
+  const src = modalGallery[modalGalleryIndex];
+  if (!els.modalImage) return;
+  // reset zoom
+  setImageScale(els.modalImage, 1);
+  els.modalImage.src = src;
+  els.modalImage.style.maxWidth = '90vw';
+  els.modalImage.style.maxHeight = '90vh';
+  const indicator = document.getElementById('modalGalleryIndicator');
+  if (indicator) indicator.textContent = `${modalGalleryIndex + 1} / ${modalGallery.length}`;
+
+  const prev = document.getElementById('modalPrev');
+  const next = document.getElementById('modalNext');
+  if (prev) prev.style.display = modalGallery.length > 1 ? 'block' : 'none';
+  if (next) next.style.display = modalGallery.length > 1 ? 'block' : 'none';
+
+  if (els.modal) { els.modal.removeAttribute('hidden'); document.body.style.overflow = 'hidden'; }
+}
+
+function openImageModal(imgOrGallery, startIndex = 0) {
+  if (!els.modal) return;
+
+  // Accept either string or array
+  if (Array.isArray(imgOrGallery)) {
+    modalGallery = imgOrGallery.slice();
+    showModalImageAt(startIndex);
+    return;
   }
+
+  // single image
+  modalGallery = null;
+  setImageScale(els.modalImage, 1);
+  els.modalImage.src = imgOrGallery;
+  els.modalImage.style.maxWidth = '90vw';
+  els.modalImage.style.maxHeight = '90vh';
+  const indicator = document.getElementById('modalGalleryIndicator');
+  if (indicator) indicator.textContent = '';
+  const prev = document.getElementById('modalPrev');
+  const next = document.getElementById('modalNext');
+  if (prev) prev.style.display = 'none';
+  if (next) next.style.display = 'none';
+  els.modal.removeAttribute('hidden');
+  document.body.style.overflow = 'hidden';
 }
 
 function closeImageModal() {
@@ -386,6 +466,7 @@ function closeImageModal() {
     document.body.style.overflow = '';
     // remove image-active state from any product cards
     document.querySelectorAll('.product-card.image-active').forEach(c => c.classList.remove('image-active'));
+    modalGallery = null; modalGalleryIndex = 0;
   }
 }
 
@@ -394,6 +475,33 @@ function setImageScale(imgEl, scale) {
   scale = Math.max(0.5, Math.min(4, scale));
   imgEl.style.transform = `scale(${scale})`;
   imgEl.dataset.scale = scale;
+}
+
+// Small toast notification helper
+function showToast(msg, timeout = 1500) {
+  if (!document.body) return;
+  let el = document.getElementById('siteToast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'siteToast';
+    el.style.position = 'fixed';
+    el.style.right = '20px';
+    el.style.bottom = '20px';
+    el.style.background = 'rgba(0,0,0,0.85)';
+    el.style.color = '#fff';
+    el.style.padding = '10px 14px';
+    el.style.borderRadius = '8px';
+    el.style.zIndex = 99999;
+    el.style.fontSize = '14px';
+    el.style.boxShadow = '0 6px 18px rgba(0,0,0,0.25)';
+    el.style.opacity = '0';
+    el.style.transition = 'opacity .18s ease';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => { el.style.opacity = '0'; }, timeout);
 }
 
 // Wire zoom controls when modal exists
@@ -423,6 +531,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const cur = parseFloat(img.dataset.scale || '1');
     setImageScale(img, cur > 1.5 ? 1 : 2);
   });
+
+  // Click image to advance in gallery (if present)
+  img.addEventListener('click', () => {
+    if (modalGallery && modalGallery.length > 1) {
+      modalGalleryIndex = (modalGalleryIndex + 1) % modalGallery.length;
+      showModalImageAt(modalGalleryIndex);
+    }
+  });
+
+  // Prev/Next buttons
+  const prevBtn = document.getElementById('modalPrev');
+  const nextBtn = document.getElementById('modalNext');
+  if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); if (modalGallery && modalGallery.length) { modalGalleryIndex = (modalGalleryIndex - 1 + modalGallery.length) % modalGallery.length; showModalImageAt(modalGalleryIndex); } });
+  if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); if (modalGallery && modalGallery.length) { modalGalleryIndex = (modalGalleryIndex + 1) % modalGallery.length; showModalImageAt(modalGalleryIndex); } });
 });
 
 // ---------- Drawer ----------
@@ -431,6 +553,32 @@ function openCart(open=true){
   els.drawer.classList.toggle('is-open', open);
   els.drawer.setAttribute('aria-hidden', (!open).toString());
   if (els.scrim) els.scrim.hidden = !open;
+}
+
+// ---------- Events ----------
+function addToCartById(id, chosenColor = null, chosenImg = null) {
+  const allProducts = [...phoneProducts, ...stanleyProducts, ...clothingProducts, ...accessoriesProducts, ...jewelryProducts, ...consolesProducts];
+  const p = allProducts.find(x => x.id === id);
+  if (!p) return false;
+  const cartKey = chosenColor ? `${id}::${chosenColor}` : id;
+  if (!state.cart[cartKey]) {
+    state.cart[cartKey] = {
+      id: cartKey,
+      originalId: p.id,
+      title: p.title + (chosenColor ? ` — ${chosenColor}` : ''),
+      price: p.price,
+      qty: 0,
+      img: chosenImg || p.img || '',
+      color: chosenColor || null
+    };
+  }
+  state.cart[cartKey].qty++;
+  saveCart();
+  renderProducts();
+  renderCart();
+  renderCartPage();
+  openCart(true);
+  return true;
 }
 
 // ---------- Events ----------
@@ -443,6 +591,7 @@ document.addEventListener('click', e => {
   // Image modal click
   if(t.closest('.clickable-image')) {
     const container = t.closest('.clickable-image');
+    const galleryRaw = container.getAttribute('data-gallery') || '';
     const imgSrc = container.dataset.img;
 
     // Clear previous active states and mark this card active
@@ -450,7 +599,18 @@ document.addEventListener('click', e => {
     const card = container.closest('.product-card');
     if (card) card.classList.add('image-active');
 
-    openImageModal(imgSrc);
+    if (galleryRaw) {
+      let gallery = [];
+      try {
+        gallery = JSON.parse(galleryRaw);
+      } catch (e) {
+        gallery = galleryRaw.split(',').map(s => s.trim()).filter(Boolean);
+      }
+      if (gallery && gallery.length) openImageModal(gallery);
+      else openImageModal(imgSrc);
+    } else {
+      openImageModal(imgSrc);
+    }
   }
 
   // Modal close button
@@ -460,10 +620,11 @@ document.addEventListener('click', e => {
   if(t.id === 'imageModal') closeImageModal();
 
   // Add to cart
-  if(t.matches('[data-add]')){
+  if (t.matches('[data-add]')) {
     const id = t.getAttribute('data-add');
-    const allProducts = [...phoneProducts, ...stanleyProducts, ...clothingProducts, ...accessoriesProducts, ...jewelryProducts];
-    const p = allProducts.find(x=>x.id===id);
+
+    const allProducts = [...phoneProducts, ...stanleyProducts, ...clothingProducts, ...accessoriesProducts, ...jewelryProducts, ...consolesProducts];
+    const p = allProducts.find(x => x.id === id);
 
     // Determine chosen color / image for variants (Stanley cup)
     let chosenColor = null, chosenImg = (p && p.img) || '';
@@ -473,30 +634,9 @@ document.addEventListener('click', e => {
       chosenImg = select.selectedOptions[0].dataset.img;
     }
 
-    // Use a composite cart key for variant-specific items so each color is separate
-    const cartKey = chosenColor ? `${id}::${chosenColor}` : id;
-
-    if (!state.cart[cartKey]) {
-      // Create a new cart entry tailored for the variant or normal product
-      const item = {
-        id: cartKey,
-        originalId: p.id,
-        title: p.title + (chosenColor ? ` — ${chosenColor}` : ''),
-        price: p.price,
-        qty: 0,
-        img: chosenImg || p.img || '',
-        color: chosenColor || null
-      };
-      state.cart[cartKey] = item;
-    }
-
-    state.cart[cartKey].qty++;
-
-    saveCart();
-    renderProducts();
-    renderCart();
-    renderCartPage();
-    openCart(true);
+    // Add to cart (available to guests) and show feedback
+    const added = addToCartById(id, chosenColor, chosenImg);
+    if (added) showToast('Added to cart');
   }
 
   // Remove item from cart
@@ -531,11 +671,16 @@ document.addEventListener('click', e => {
     }
   }
 
-  // Checkout
-  if(t.id === 'checkout-btn'){
+  // Checkout (requires sign-in)
+  if (t.id === 'checkout-btn') {
     const entries = Object.values(state.cart);
-    if(entries.length > 0) {
-      window.location.href = 'checkout.html';
+    if (entries.length > 0) {
+      if (!localStorage.getItem('currentUser')) {
+        localStorage.setItem('postLoginRedirect', JSON.stringify({ action: 'checkout' }));
+        window.location.href = 'auth.html';
+      } else {
+        window.location.href = 'checkout.html';
+      }
     }
   }
 });
@@ -656,5 +801,32 @@ document.addEventListener('DOMContentLoaded', () => {
   ensureHeaderControls();
   // update visibility if localStorage changes in another tab
   window.addEventListener('storage', () => updateHeaderLogoutVisibility());
+
+  // After returning from login/signup, resume pending action if any
+  try {
+    const raw = localStorage.getItem('postLoginRedirect');
+    if (raw) {
+      const payload = JSON.parse(raw);
+      localStorage.removeItem('postLoginRedirect');
+
+      if (payload.action === 'checkout') {
+        if (localStorage.getItem('currentUser')) {
+          window.location.href = 'checkout.html';
+        } else {
+          // If still not logged in, go to auth page
+          window.location.href = 'auth.html';
+        }
+      } else if (payload.action === 'add' && payload.productId) {
+        // perform the add if signed in
+        if (localStorage.getItem('currentUser')) {
+          addToCartById(payload.productId, payload.chosenColor || null, payload.chosenImg || null);
+          // proceed straight to checkout to complete purchase
+          window.location.href = 'checkout.html';
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to process post-login redirect:', e);
+  }
 });
 

@@ -77,13 +77,29 @@ window.login = async function() {
   const password = document.getElementById("login-password").value;
 
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    // Cache a minimal currentUser for client-side checks
+    localStorage.setItem('currentUser', JSON.stringify({ uid: user.uid, email: user.email, name: (user.email || '').split('@')[0] }));
     document.getElementById("auth-message").innerText = "Login successful! Redirecting...";
 
-    // ✅ Redirect to index2.html after login
+    // Redirect according to any pending intent (postLoginRedirect)
     setTimeout(() => {
-      window.location.href = "index2.html";
-    }, 1500);
+      try {
+        const raw = localStorage.getItem('postLoginRedirect');
+        if (raw) {
+          const payload = JSON.parse(raw);
+          if (payload.action === 'checkout') {
+            window.location.href = 'checkout.html';
+            return;
+          }
+          // default for 'add' or unknown: go to authenticated home where app.js will resume the action
+          window.location.href = 'index.html';
+          return;
+        }
+      } catch (e) { /* ignore */ }
+      window.location.href = 'index.html';
+    }, 800);
 
   } catch (error) {
     let message = error.message;

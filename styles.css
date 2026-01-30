@@ -109,6 +109,7 @@ body{
 .product-media img{width:100%; height:100%; object-fit:cover}
 .product-meta{display:flex; align-items:center; justify-content:space-between}
 .product-title{font-weight:600}
+.product-desc{color:var(--muted);font-size:0.95rem;margin-top:6px;line-height:1.3}
 .price{font-weight:700}
 .add-row{display:flex; gap:.6rem}
 .qty{display:flex; align-items:center; gap:.6rem}
@@ -520,7 +521,7 @@ body{
 }
 
 /* When the product image is active (clicked), make its buttons prominent */
-.product-card.image-active .btn {
+..product-card.image-active .btn {
   background: var(--primary) !important;
   color: var(--primary-ink) !important;
   border: none !important;
@@ -531,6 +532,11 @@ body{
   background: var(--primary) !important;
   color: white !important;
 }
+
+/* Footer contact icons — ensure they appear white */
+.contact-list a { color: var(--text); text-decoration: none; display:inline-flex; align-items:center; gap:.5rem; }
+.contact-list svg { color: var(--text); stroke: currentColor; fill: currentColor; }
+.social-icon svg { color: var(--text); stroke: currentColor; fill: currentColor; }
 
 /* ===== Checkout Page Styles ===== */
 .checkout-container {
