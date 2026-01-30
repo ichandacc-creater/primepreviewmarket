@@ -99,6 +99,21 @@ const jewelryProducts = [
   { id:'ring1', brand:'jewelry', title:'Silver Ring', price: 1200, img:'assets/1.jpg' },
 ];
 
+// Consoles fallback (use global if available)
+const consolesProducts = window.consolesProducts || [];
+
+// Truncate helper
+function truncate(str, n = 120) {
+  if (!str) return '';
+  return str.length > n ? str.slice(0, n).trim() + '…' : str;
+}
+
+// Ensure every product has a description (default where missing)
+(function ensureDescriptions(){
+  const lists = [phoneProducts, stanleyProducts, clothingProducts, accessoriesProducts, jewelryProducts, consolesProducts];
+  lists.forEach(list => list.forEach(p => { if (!p.description) p.description = `High-quality ${p.title} from Prime Preview.`; }));
+})();
+
 // ---------- State ----------
 const state = { cart: {}, filter: 'all' };
 
@@ -247,7 +262,10 @@ function renderProducts(){
         <article class="product-card" data-id="${p.id}">
           <div class="product-media clickable-image" data-img="${p.variants[0].img}" style="cursor:pointer"><img src="${p.variants[0].img}" alt="${p.title}" onerror="handleImgError(this,'${p.variants[0].img}')" style="cursor:pointer"></div>
           <div class="product-meta">
-            <div class="product-title">${p.title}</div>
+            <div>
+              <div class="product-title">${p.title}</div>
+              <div class="product-desc">${truncate(p.description)}</div>
+            </div>
             <div class="price">${format(p.price)}</div>
           </div>
           <label class="muted">Choose color:</label>
@@ -264,7 +282,10 @@ function renderProducts(){
       <article class="product-card" data-id="${p.id}">
         <div class="product-media clickable-image" data-img="${p.img}" style="cursor:pointer"><img src="${p.img}" alt="${p.title}" onerror="handleImgError(this,'${p.img}')" style="cursor:pointer"></div>
         <div class="product-meta">
-          <div class="product-title">${p.title}</div>
+          <div>
+            <div class="product-title">${p.title}</div>
+            <div class="product-desc">${truncate(p.description)}</div>
+          </div>
           <div class="price">${format(p.price)}</div>
         </div>
         <button class="btn btn-primary" data-add="${p.id}">Add to cart</button>
@@ -396,6 +417,33 @@ function setImageScale(imgEl, scale) {
   imgEl.dataset.scale = scale;
 }
 
+// Minimal toast helper for auth pages
+function showToast(msg, timeout = 1500) {
+  if (!document.body) return;
+  let el = document.getElementById('siteToast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'siteToast';
+    el.style.position = 'fixed';
+    el.style.right = '20px';
+    el.style.bottom = '20px';
+    el.style.background = 'rgba(0,0,0,0.85)';
+    el.style.color = '#fff';
+    el.style.padding = '10px 14px';
+    el.style.borderRadius = '8px';
+    el.style.zIndex = 99999;
+    el.style.fontSize = '14px';
+    el.style.boxShadow = '0 6px 18px rgba(0,0,0,0.25)';
+    el.style.opacity = '0';
+    el.style.transition = 'opacity .18s ease';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => { el.style.opacity = '0'; }, timeout);
+}
+
 // Wire zoom controls when modal exists
 document.addEventListener('DOMContentLoaded', () => {
   const img = document.getElementById('modalImage');
@@ -462,7 +510,7 @@ document.addEventListener('click', e => {
   // Add to cart
   if(t.matches('[data-add]')){
     const id = t.getAttribute('data-add');
-    const allProducts = [...phoneProducts, ...stanleyProducts, ...clothingProducts, ...accessoriesProducts, ...jewelryProducts];
+    const allProducts = [...phoneProducts, ...stanleyProducts, ...clothingProducts, ...accessoriesProducts, ...jewelryProducts, ...consolesProducts];
     const p = allProducts.find(x=>x.id===id);
 
     // Determine chosen color / image for variants (Stanley cup)
@@ -471,6 +519,14 @@ document.addEventListener('click', e => {
     if (select) {
       chosenColor = select.value;
       chosenImg = select.selectedOptions[0].dataset.img;
+    }
+
+    // If not signed in, save the intent and prompt login
+    if (!localStorage.getItem('currentUser')) {
+      localStorage.setItem('postLoginRedirect', JSON.stringify({ action: 'add', productId: id, chosenColor: chosenColor || null, chosenImg: chosenImg || null }));
+      showToast('Login first');
+      // stay on auth page so user can sign in
+      return;
     }
 
     // Use a composite cart key for variant-specific items so each color is separate
@@ -497,6 +553,8 @@ document.addEventListener('click', e => {
     renderCart();
     renderCartPage();
     openCart(true);
+    // feedback
+    if (window.showToast) showToast('Added to cart');
   }
 
   // Remove item from cart

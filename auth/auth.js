@@ -227,7 +227,7 @@ window.login = async function() {
         ? 'admin-dashboard.html'
         : userData.userRole === 'supplier'
         ? 'supplier-dashboard.html'
-        : '../index2.html';
+        : '../index.html';
       
       window.location.href = redirectUrl;
     }, 1500);

@@ -634,7 +634,15 @@ document.addEventListener('click', e => {
       chosenImg = select.selectedOptions[0].dataset.img;
     }
 
-    // Add to cart (available to guests) and show feedback
+    // Add to cart (requires sign-in). If not signed in, save intent and redirect to login.
+    if (!localStorage.getItem('currentUser')) {
+      localStorage.setItem('postLoginRedirect', JSON.stringify({ action: 'add', productId: id, chosenColor: chosenColor || null, chosenImg: chosenImg || null }));
+      showToast('Login first');
+      window.location.href = 'auth.html';
+      return;
+    }
+
+    // perform add for signed-in users
     const added = addToCartById(id, chosenColor, chosenImg);
     if (added) showToast('Added to cart');
   }
