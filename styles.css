@@ -55,9 +55,20 @@ body{
 .mobile-nav-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
 .mobile-nav-list a{color:var(--text); text-decoration:none; padding:.6rem .8rem; border-radius:8px; display:block}
 
+/* Quick mobile dropdown (product pages) */
+.mobile-menu-btn{display:none; position:absolute; right:56px; top:50%; transform:translateY(-50%); background:transparent; border:none; width:44px; height:44px; align-items:center; justify-content:center; cursor:pointer}
+.mobile-menu-btn span{display:block; width:20px; height:2px; background:var(--text); border-radius:2px; margin:3px 0; transition:transform .15s ease, opacity .15s ease}
+
+.mobile-menu-dropdown{position:absolute; right:12px; top:64px; background:var(--surface); border-radius:10px; box-shadow:var(--shadow-2); padding:10px; min-width:200px; z-index:1200}
+.mobile-menu-dropdown[hidden]{display:none}
+.mobile-menu-dropdown ul{list-style:none;margin:0;padding:0}
+.mobile-menu-dropdown a{display:block;padding:8px 12px;color:var(--text); text-decoration:none;border-radius:8px}
+.mobile-menu-dropdown a:hover{background:rgba(255,255,255,.04)}
+
 @media (max-width: 768px){
   .nav{display:none}
   .mobile-toggle{display:inline-flex}
+  .mobile-menu-btn{display:inline-flex}
 } 
 .badge{background:rgba(79,124,255,.15); color:#cfe0ff}
 

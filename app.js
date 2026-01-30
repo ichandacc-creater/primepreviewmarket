@@ -887,5 +887,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginBtn = e.target.closest('#mobileLoginBtn');
     if (loginBtn) { openMobileNav(false); return; }
   });
+
+  // Product page quick mobile dropdown menu
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileMenuDropdown = document.getElementById('mobileMenuDropdown');
+  const mobileMenuAuth = document.getElementById('mobileMenuAuth');
+  function openMobileMenu(open = true) {
+    if (!mobileMenuDropdown) return;
+    mobileMenuDropdown.hidden = !open;
+    mobileMenuDropdown.setAttribute('aria-hidden', (!open).toString());
+    if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', open.toString());
+  }
+  mobileMenuBtn && mobileMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openMobileMenu(!(mobileMenuDropdown && !mobileMenuDropdown.hidden));
+    // populate auth area each time the menu is opened so state is fresh
+    const cur = localStorage.getItem('currentUser');
+    if (mobileMenuAuth) {
+      if (cur) {
+        let user;
+        try { user = JSON.parse(cur); } catch (err) { user = { email: cur }; }
+        mobileMenuAuth.innerHTML = `<div style="display:flex;gap:.5rem;align-items:center;justify-content:space-between"><span style="font-weight:600">${user.name || user.email || ''}</span><button id="mobileMenuLogoutBtn" class="btn btn-secondary" style="margin-left:auto">Logout</button></div>`;
+      } else {
+        mobileMenuAuth.innerHTML = `<a href="auth.html" id="mobileMenuLoginBtn" class="btn btn-primary" style="display:inline-flex;width:100%;justify-content:center">Login / Sign up</a>`;
+      }
+    }
+  });
+
+  // close mobile menu when clicking outside or when selecting a link
+  document.addEventListener('click', (e) => {
+    if (mobileMenuDropdown && !mobileMenuDropdown.contains(e.target) && !e.target.closest('#mobileMenuBtn')) {
+      openMobileMenu(false);
+    }
+  });
+
+  mobileMenuDropdown && mobileMenuDropdown.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (a) openMobileMenu(false);
+    const logout = e.target.closest('#mobileMenuLogoutBtn');
+    if (logout) {
+      localStorage.removeItem('currentUser');
+      updateHeaderLogoutVisibility();
+      updateMobileAuth();
+      openMobileMenu(false);
+    }
+    const login = e.target.closest('#mobileMenuLoginBtn');
+    if (login) openMobileMenu(false);
+  });
 });
 
