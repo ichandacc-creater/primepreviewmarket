@@ -970,4 +970,40 @@ body{
 .nav a, .chip, .btn, .icon-btn { touch-action: manipulation; }
 .nav a { padding: 10px 12px; border-radius: 8px; }
 
+/* Mobile-friendly tweaks */
+@media (max-width: 480px) {
+  /* Stack product action buttons, make them easy to tap */
+  .add-row { flex-direction: column; }
+  .add-row .btn { width: 100%; justify-content:center; }
+
+  /* Make product meta stack for compact cards */
+  .product-meta { flex-direction: column; align-items: flex-start; gap: 8px; }
+
+  /* Hero actions stack and become full-width */
+  .hero-actions { flex-direction: column; gap: .6rem; }
+  .hero-actions .btn { width: 100%; }
+
+  /* Featured picks stack neatly */
+  .featured-grid { flex-direction: column; }
+  .featured-grid figure { width: 100%; }
+  .featured-grid img { max-height: 260px; object-fit: cover; }
+
+  /* Footer: stack columns and increase spacing */
+  .footer-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+  .footer-bottom { text-align: center; }
+
+  /* Mobile menu: increase tap targets */
+  .mobile-nav-list a { padding: 12px 16px; border-radius: 10px; }
+
+  /* Modal nav arrows larger for touch */
+  .modal-nav { width: 56px; height: 56px; font-size: 32px; }
+}
+
+@media (max-width: 768px) {
+  /* Make product grid 2 columns on medium screens for readability */
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .category-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+
 

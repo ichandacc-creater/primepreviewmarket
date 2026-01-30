@@ -811,12 +811,26 @@ function updateHeaderLogoutVisibility() {
   } else if (existing) {
     existing.remove();
   }
+  if (typeof updateMobileAuth === 'function') updateMobileAuth();
+}
+
+function updateMobileAuth() {
+  const el = document.getElementById('mobileAuth');
+  if (!el) return;
+  const cur = localStorage.getItem('currentUser');
+  if (cur) {
+    let user; try { user = JSON.parse(cur); } catch (e) { user = { email: cur }; }
+    el.innerHTML = `<div style="display:flex;gap:.5rem;align-items:center;justify-content:space-between"><span style="font-weight:600">${user.name || user.email || ''}</span><button id="mobileLogoutBtn" class="btn btn-secondary" style="margin-left:auto">Logout</button></div>`;
+  } else {
+    el.innerHTML = `<a href="auth.html" id="mobileLoginBtn" class="btn btn-primary" style="display:inline-flex;width:100%;justify-content:center">Login / Sign up</a>`;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   ensureHeaderControls();
+  updateMobileAuth();
   // update visibility if localStorage changes in another tab
-  window.addEventListener('storage', () => updateHeaderLogoutVisibility());
+  window.addEventListener('storage', () => { updateHeaderLogoutVisibility(); updateMobileAuth(); });
 
   // After returning from login/signup, resume pending action if any
   try {
@@ -861,7 +875,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (scrim) scrim.addEventListener('click', () => openMobileNav(false));
   mobileNav && mobileNav.addEventListener('click', (e) => {
     const a = e.target.closest('a');
-    if (a) openMobileNav(false);
+    if (a) { openMobileNav(false); return; }
+    const logoutBtn = e.target.closest('#mobileLogoutBtn');
+    if (logoutBtn) {
+      localStorage.removeItem('currentUser');
+      updateHeaderLogoutVisibility();
+      updateMobileAuth();
+      openMobileNav(false);
+      return;
+    }
+    const loginBtn = e.target.closest('#mobileLoginBtn');
+    if (loginBtn) { openMobileNav(false); return; }
   });
 });
 
