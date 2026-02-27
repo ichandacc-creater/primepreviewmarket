@@ -1,51 +1,71 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>About — Prime Preview</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About | Cladding Investments</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="site-header">
-    <div class="container header-bar">
-      <a href="index.html" class="brand"><img src="assets/logo.png" alt="Prime Preview logo" class="logo"></a>
-      <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="products.html">Shop</a>
-        <a href="about.html" class="is-active">About</a>
+    <div class="container header-inner">
+      <a class="logo" href="home.html"><img src="images/logo.png" alt="Cladding Investments Logo" style="height:40px;width:auto"></a>
+      <button id="nav-toggle" class="nav-toggle" aria-controls="site-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav" role="navigation">
+        <a href="home.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="about.html" class="active">About</a>
         <a href="contact.html">Contact</a>
-        <a href="cart.html" class="cart-btn">Cart <span data-cart-count>0</span></a>
       </nav>
     </div>
-      <button id="mobileNavToggle" class="mobile-toggle" aria-label="Open menu">Menu</button>
   </header>
 
-  <nav id="mobileNav" class="mobile-nav" aria-hidden="true" hidden>
-    <button id="mobileNavClose" class="mobile-nav-close" aria-label="Close menu">✕</button>
-    <ul class="mobile-nav-list">
-      <li><a href="phones.html">Phones</a></li>
-      <li><a href="accessories.html">Accessories</a></li>
-      <li><a href="clothing-shoes.html">Clothing &amp; Shoes</a></li>
-      <li><a href="jewelry.html">Jewelry</a></li>
-      <li><a href="stanley-cups.html">Stanley Cups</a></li>
-      <li><a href="consoles.html">Consoles</a></li>
-      <li><a href="cart.html" class="badge">Cart <span data-cart-count>0</span></a></li>
-    </ul>
-    <div id="mobileAuth" class="mobile-auth" style="margin-top:1rem;"></div>
-  </nav>
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <h1>About Us</h1>
+        <p>Building excellence through innovation and sustainability.</p>
+      </div>
+    </section>
 
-  <main class="container">
-    <h1>About Prime Preview</h1>
-    <p>We’re a Zambia‑based e‑commerce store bringing premium tech closer to you. Our mission is to deliver modern devices with trust, clarity, and service that feels human.</p>
+    <section class="container" style="margin-top:18px">
+      <div class="section-card">
+        <h2>Our Mission</h2>
+        <p>To deliver modern, durable, and sustainable cladding solutions that transform infrastructure across Zambia. We aim to combine design innovation with practical functionality for long-lasting impact.</p>
+      </div>
+      <div style="height:12px"></div>
+      <div class="section-card">
+        <h2>Our Vision</h2>
+        <p>To be the leading provider of cladding solutions in the region, recognized for quality, reliability, and eco-conscious practices that support community growth and development.</p>
+      </div>
+      <div style="height:12px"></div>
+      <div class="section-card">
+        <h2>Our Values</h2>
+        <ul style="margin-top:8px;color:var(--muted)">
+          <li>Integrity — honest and transparent in all our dealings.</li>
+          <li>Innovation — embracing modern design and technology.</li>
+          <li>Sustainability — eco-friendly practices for future generations.</li>
+          <li>Excellence — delivering projects that exceed expectations.</li>
+        </ul>
+      </div>
+    </section>
   </main>
 
-  <div class="scrim" data-scrim hidden></div>
+  <!-- WhatsApp Floating Button -->
+  <a href="https://wa.me/260966011997" class="whatsapp-btn"><i class="fab fa-whatsapp"></i></a>
 
-  <footer class="site-footer">
-    <div class="container footer-bottom">
-      <small>© 2025 Prime Preview</small>
-    </div>
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Cladding Investments | All Rights Reserved</p>
   </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | Cladding Investments</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="home.html"><img src="images/logo.png" alt="Cladding Investments Logo" style="height:40px;width:auto"></a>
+      <button id="nav-toggle" class="nav-toggle" aria-controls="site-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav" role="navigation">
+        <a href="home.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="about.html">About</a>
+        <a href="contact.html" class="active">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <h1>Contact Us</h1>
+        <p>We’d love to hear from you. Reach out today.</p>
+      </div>
+    </section>
+
+    <section class="contact-section container" style="margin-top:18px">
+      <div class="contact-grid">
+        <div class="section-card contact-info">
+          <h2>Get in Touch</h2>
+          <p>We're available for consultations, quotes and site visits. Reach out and we'll respond within 48 hours.</p>
+          <p style="margin-top:8px"><i class="fas fa-envelope"></i> Email: <a href="mailto:inch.2009@yahoo.com">inch.2009@yahoo.com</a></p>
+          <p><i class="fab fa-whatsapp"></i> WhatsApp: <a href="https://wa.me/260966011997">+260 966 011 997</a></p>
+          <p><i class="fas fa-map-marker-alt"></i> Address: Ndola, Zambia</p>
+          <p style="margin-top:12px"><a href="projects.html" class="btn secondary">View Our Projects</a></p>
+        </div>
+
+        <div class="section-card contact-form">
+          <h2>Send Us a Message</h2>
+          <form id="contactForm" action="#" method="post" novalidate>
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" placeholder="Your name" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="6" placeholder="Tell us about your project" required></textarea>
+
+            <div class="form-actions">
+              <button type="submit" class="btn">Send Message</button>
+            </div>
+
+            <div id="formSuccess" class="form-success hidden" role="status" aria-live="polite">
+              <strong>Thanks —</strong> your message was received. We'll reply shortly.
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <a href="https://wa.me/260966011997" class="whatsapp-btn" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+
+    <footer>
+      <p>&copy; 2026 Cladding Investments | All Rights Reserved</p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

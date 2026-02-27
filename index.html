@@ -1,143 +1,256 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prime Preview — Modern E‑commerce</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-  <script src="app.js" defer></script>
-  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
 </head>
+<body>
+  <!-- Welcome Splash Screen -->
+  <div id="welcome-splash" class="welcome-splash">
+    <div class="welcome-content">
+      <img src="images/logo.png" alt="Cladding Investments" class="welcome-logo">
+      <h1>Welcome to Cladding Investments</h1>
+      <p>Building Excellence with Cladding Solutions</p>
+      <div class="welcome-loader"></div>
+    </div>
+  </div>
 
-<!-- IMPORTANT: set category so app.js knows what to render -->
-<body data-category="phones">
   <header class="site-header">
-    <div class="container header-bar">
-      <a class="brand" href="index.html">
-        <img src="assets/logo.png" alt="Prime Preview logo" class="logo" />
-      </a>
-      <nav class="nav">
-        <a href="phones.html">Phones</a>
-        <a href="accessories.html">Accessories</a>
-        <a href="clothing&shoes.html">Clothing &amp; Shoes</a>
-        <a href="jewelry.html">Jewelry</a>
-        <a href="stanley-cups.html">Stanley Cups</a>
-        <a href="consoles.html">Consoles</a>
+    <div class="container header-inner">
+      <a class="logo" href="home.html"><img src="images/logo.png" alt="Cladding Investments Logo" style="height:40px;width:auto"></a>
+      <button id="nav-toggle" class="nav-toggle" aria-controls="site-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav" role="navigation">
+        <a href="home.html" class="active">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
       </nav>
-      <a href="cart.html" class="cart-btn">Cart <span data-cart-count>0</span></a>
-      <!-- Mobile toggle placed below the logo on narrow screens -->
-      <button id="mobileNavToggle" class="mobile-toggle" aria-label="Open menu">Shop with us</button>
-
+      <div class="nav-actions">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Dark Mode">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
     </div>
   </header>
-  <nav id="mobileNav" class="mobile-nav" aria-hidden="true" hidden>
-    <button id="mobileNavClose" class="mobile-nav-close" aria-label="Close menu">✕</button>
-    <ul class="mobile-nav-list">
-      <li><a href="phones.html">Phones</a></li>
-      <li><a href="accessories.html">Accessories</a></li>
-      <li><a href="clothing&shoes.html">Clothing &amp; Shoes</a></li>
-      <li><a href="jewelry.html">Jewelry</a></li>
-      <li><a href="stanley-cups.html">Stanley Cups</a></li>
-      <li><a href="consoles.html">Consoles</a></li>
-      <li><a href="cart.html" class="badge">Cart <span data-cart-count>0</span></a></li>
-    </ul>
-    <div id="mobileAuth" class="mobile-auth" style="margin-top:1rem;"></div>
-  </nav>
 
-  <section class="hero">
-    <div class="container hero-content">
-      <div class="hero-copy">
-        <h1>Upgrade your everyday</h1>
-        <p>Curated tech with premium service—fast delivery, honest pricing, and support that actually cares.</p>
-
+  <main>
+    <section class="hero">
+      <div class="slides">
+        <video src="images/Nsobe%20project%20(11).mp4" class="active" muted playsinline loop autoplay poster="images/Nsobe%20project%20(1).jpg"></video>
       </div>
-      <div class="hero-media">
-        <img src="assets/hero-banner.jpg" alt="Modern smartphone on a clean desk" />
+
+      <div class="overlay">
+        <div class="container">
+          <div class="hero-card">
+            <h1>Building Excellence with Cladding Investments</h1>
+            <p>construction and rehabilitation of Natural Sciences laboratory, Computer Labs and modernized kitchen.
+Plumbing works, Electric wiring and gas liners.</p>
+            <p style="margin-top:14px">
+              <a href="projects.html" class="btn">Explore Projects</a>
+              <a href="contact.html" class="btn secondary" style="margin-left:8px">Request Quote</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-controls">
+        <button class="hero-arrow prev" aria-label="Previous slide">&#10094;</button>
+        <button class="hero-arrow next" aria-label="Next slide">&#10095;</button>
+        <div class="dots" aria-hidden="false"></div>
+      </div>
+    </section>
+    <section class="decor-gallery" aria-hidden="false" style="padding:50px 20px">
+      <div class="container">
+        <div class="decor-grid">
+          <img src="images/Nsobe%20project%20(2).jpeg" alt="Decor Nsobe 2" class="decor-img">
+          <img src="images/Nsobe%20project%20(3).jpeg" alt="Decor Nsobe 3" class="decor-img">
+          <img src="images/Nsobe%20project%20(4).jpeg" alt="Decor Nsobe 4" class="decor-img">
+          <img src="images/Nsobe%20project%20(5).jpeg" alt="Decor Nsobe 5" class="decor-img">
+        </div>
+      </div>
+    </section>
+
+    <section class="features" style="padding:70px 20px 60px">
+      <div class="container">
+        <div class="features-grid">
+        <div class="feature">
+          <i class="fas fa-lightbulb fa-2x"></i>
+          <h3>Innovative Design</h3>
+          <p>Smart, efficient cladding solutions tailored to your space.</p>
+        </div>
+        <div class="feature">
+          <i class="fas fa-leaf fa-2x"></i>
+          <h3>Sustainable Materials</h3>
+          <p>Durable, eco-conscious materials for long-lasting performance.</p>
+        </div>
+        <div class="feature">
+          <i class="fas fa-tools fa-2x"></i>
+          <h3>Expert Installation</h3>
+          <p>Trained teams delivering safe, on-time project completion.</p>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <section class="projects-preview" style="padding:70px 20px 60px">
+      <div class="container">
+        <div class="preview-header">
+          <h2>Featured Project Albums</h2>
+          <p><a href="projects.html" class="btn secondary">View All Projects</a></p>
+        </div>
+        <div class="preview-grid">
+        <!-- Nsobe Science Lab Album -->
+        <article class="project-card album-card">
+          <div class="project-image-wrapper">
+            <img src="images/Nsobe%20project%20(1).jpg" alt="Nsobe Science Lab" class="album-main-img">
+            <div class="project-overlay">
+              <div class="overlay-content">
+                <h3>Science Lab — Nsobe</h3>
+                <p>Complete Laboratory Installation</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="album-header">
+              <div>
+                <h3>Science Lab — Nsobe</h3>
+                <span class="album-badge">Education & Laboratory</span>
+              </div>
+              <div class="album-count"><i class="fas fa-images"></i> 7</div>
+            </div>
+            <p>Complete laboratory installation with modern fittings and safety equipment.</p>
+            <div class="album-thumbnails">
+              <img src="images/Nsobe%20project%20(1).jpg" alt="Thumb 1" class="album-thumb" title="Image 1">
+              <img src="images/Nsobe%20project%20(2).jpeg" alt="Thumb 2" class="album-thumb" title="Image 2">
+              <img src="images/Nsobe%20project%20(3).jpeg" alt="Thumb 3" class="album-thumb" title="Image 3">
+              <img src="images/Nsobe%20project%20(4).jpeg" alt="Thumb 4" class="album-thumb" title="Image 4">
+              <img src="images/Nsobe%20project%20(5).jpeg" alt="Thumb 5" class="album-thumb" title="Image 5">
+              <a href="nsobe.html" class="album-more" title="View full album"><i class="fas fa-plus"></i></a>
+            </div>
+            <div class="card-actions">
+              <a href="nsobe.html" class="btn">View Album</a>
+              <a href="contact.html" class="btn secondary">Request Quote</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Kansenshi Chemistry Lab Album -->
+        <article class="project-card album-card">
+          <div class="project-image-wrapper">
+            <img src="images/kansenshi.jpg" alt="Kansenshi Chemistry Lab" class="album-main-img">
+            <div class="project-overlay">
+              <div class="overlay-content">
+                <h3>Chemistry Lab — Kansenshi</h3>
+                <p>Modern Science Facility</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="album-header">
+              <div>
+                <h3>Chemistry Lab — Kansenshi</h3>
+                <span class="album-badge">Education & Laboratory</span>
+              </div>
+              <div class="album-count"><i class="fas fa-check-circle"></i> Completed</div>
+            </div>
+            <p>Advanced chemistry laboratory with specialized equipment and safety protocols.</p>
+            <div class="album-thumbnails">
+              <img src="images/kansenshi.jpg" alt="Thumb 1" class="album-thumb" title="Kansenshi 1">
+              <img src="images/Kansanshi%20project%20(2).jpg" alt="Thumb 2" class="album-thumb" title="Kansanshi 2">
+              <img src="images/Kansanshi%20project%20(3).jpg" alt="Thumb 3" class="album-thumb" title="Kansanshi 3">
+            </div>
+            <div class="card-actions">
+              <a href="projects.html" class="btn">View Album</a>
+              <a href="contact.html" class="btn secondary">Request Quote</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Kansenshi Secondary School Album -->
+        <article class="project-card album-card">
+          <div class="project-image-wrapper">
+            <img src="images/kansenshi2.jpg" alt="Kansenshi Secondary School" class="album-main-img">
+            <div class="project-overlay">
+              <div class="overlay-content">
+                <h3>Science Lab — Kansenshi Secondary</h3>
+                <p>Lab Refurbishment & Upgrades</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="album-header">
+              <div>
+                <h3>Kansenshi Secondary School</h3>
+                <span class="album-badge">Education & Laboratory</span>
+              </div>
+              <div class="album-count"><i class="fas fa-tools"></i> Refurbished</div>
+            </div>
+            <p>Science lab refurbishment with modernized facilities and enhanced safety standards.</p>
+            <div class="album-thumbnails">
+              <img src="images/kansenshi2.jpg" alt="Thumb 1" class="album-thumb" title="Image 1">
+              <img src="images/Kansenshi%20project%20(2).jpeg" alt="Thumb 2" class="album-thumb" title="Image 2">
+              <img src="images/Kansenshi%20project%20(3).jpeg" alt="Thumb 3" class="album-thumb" title="Image 3">
+            </div>
+            <div class="card-actions">
+              <a href="projects.html" class="btn">View Album</a>
+              <a href="contact.html" class="btn secondary">Request Quote</a>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
-  </section>
+    </section>
 
-  <!-- Categories removed per request -->
-  <section class="featured-picks container" aria-label="Featured picks">
-    <h2>Buy a Play Station from us</h2>
-    <div class="featured-grid" style="display:flex;gap:1rem;align-items:center;justify-content:center;flex-wrap:wrap;">
-      <figure style="flex:1;min-width:240px;text-align:center;margin:0;">
-        <img src="assets/ps5 (2).jpeg" alt="PlayStation 5" style="max-width:100%;height:auto;border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.08);" />
-        <figcaption style="margin-top:.5rem;color:var(--muted);">PlayStation 5</figcaption>
-      </figure>
-      <figure style="flex:1;min-width:240px;text-align:center;margin:0;">
-        <img src="assets/iphone17promax.jpg" alt="iPhone 17 Pro Max" style="max-width:100%;height:auto;border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.08);" />
-        <figcaption style="margin-top:.5rem;color:var(--muted);">iPhone 17 Pro Max</figcaption>
-      </figure>
-    </div>
-  </section> <!-- featured picks -->
-
-  <!-- cart drawer removed: use cart.html for full cart -->
-
-  <div class="scrim" data-scrim hidden></div>
-
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <h4>Prime Preview</h4>
-        <p>Trusted Tech Plug for Zambia.</p>
+    <section class="about-preview" style="padding:60px 20px">
+      <div class="container">
+        <div class="section-card">
+          <h2>Who We Are</h2>
+          <p> Cladding investment limited 
+ Your leading partners in construction and rehabilitation of Natural Sciences laboratory, Computer Labs and modernized kitchen.
+Plumbing works, Electric wiring and gas liners.<p style="margin-top:12px"><a href="about.html" class="btn secondary">Learn More</a></p>
+        </div>
       </div>
-      <div>
-        <h4>Contact</h4>
-        <ul class="list contact-list">
-          <li>
-            <a href="https://instagram.com/primepreviewac" target="_blank">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:.5rem;">
-                <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.2" fill="none" />
-                <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.2" fill="none" />
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
-              </svg>
-              @primepreviewac
-            </a>
-          </li>
-          <li>
-            <a href="tel:+260765660047">
-              <!-- Phone icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:.5rem;">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 3.08 4.18 2 2 0 0 1 5 2h3a2 2 0 0 1 2 1.72c.12 1.05.36 2.07.69 3.03a2 2 0 0 1-.45 2.11L9.91 11.09a16 16 0 0 0 6 6l1.23-1.23a2 2 0 0 1 2.11-.45c.96.33 1.98.57 3.03.69A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="1.2" fill="none"></path>
-              </svg>
-              +260 765 660 047
-            </a>
-          </li>
-          <li>
-            <a href="mailto:primepreviewacc@gmail.com">
-              <!-- Email icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:.5rem;">
-                <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7" stroke="currentColor" stroke-width="1.2" fill="none"></path>
-                <polyline points="3 7 12 13 21 7" stroke="currentColor" stroke-width="1.2" fill="none"></polyline>
-              </svg>
-              info@primepreviewmarket.com
-            </a>
-          </li>
-        </ul>
+    </section>
+
+    <section class="contact-preview" style="padding:60px 20px">
+      <div class="container">
+        <div class="section-card">
+          <h2>Get in Touch</h2>
+          <p>Email: <a href="mailto:inch.2009@yahoo.com">inch.2009@yahoo.com</a></p>
+          <p>WhatsApp: <a href="https://wa.me/260966011997">+260 966 011 997</a></p>
+          <p style="margin-top:12px"><a href="contact.html" class="btn secondary">Contact Us</a></p>
+        </div>
       </div>
-      <div>
-        <h4>Follow</h4>
-        <ul class="list">
-          <li>
-            <a href="https://instagram.com/primepreviewac" target="_blank">@primepreviewac</a>
-            <a href="https://instagram.com/yourprofile" target="_blank" class="social-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
-                <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.2" fill="none" />
-                <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.2" fill="none" />
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
-              </svg>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="container footer-bottom">
-      <small>© 2025 Prime Preview. All rights reserved.</small>
-      
-    </div>
+    </section>
+  </main>
+
+  <button id="back-to-top" class="back-to-top" aria-label="Back to top"><i class="fas fa-chevron-up"></i></button>
+  <!-- WhatsApp Floating Button -->
+  <a href="https://wa.me/260966011997" class="whatsapp-btn"><i class="fab fa-whatsapp"></i></a>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Cladding Investments | All Rights Reserved</p>
   </footer>
+
+  <!-- Lightbox (used across pages) -->
+  <div class="lightbox hidden" aria-hidden="true" role="dialog" aria-label="Image preview">
+    <button class="close" aria-label="Close">&times;</button>
+    <img id="lightbox-img" src="" alt="Preview">
+  </div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
 </body>
 </html>
+
+
+
