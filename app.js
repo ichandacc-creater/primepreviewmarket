@@ -749,11 +749,123 @@ document.addEventListener('change', e => {
   }
 });
 
+// ---------- Search Utilities ----------
+function getAllProducts() {
+  return [
+    ...phoneProducts,
+    ...stanleyProducts,
+    ...clothingProducts,
+    ...accessoriesProducts,
+    ...jewelryProducts,
+    ...consolesProducts,
+  ];
+}
+
+function createSearchSection() {
+  if (document.getElementById('searchResults')) return;
+  const section = document.createElement('section');
+  section.id = 'searchResults';
+  section.className = 'search-results hidden container';
+  section.innerHTML = `
+    <h2>Search Results</h2>
+    <div id="searchResultsGrid" class="product-grid"></div>
+    <p id="searchNoResults" class="search-no-results" hidden>No products matched your search. Try another keyword.</p>
+  `;
+
+  const hero = document.querySelector('.hero');
+  if (hero && hero.parentNode) {
+    hero.parentNode.insertBefore(section, hero.nextSibling);
+  } else {
+    const main = document.querySelector('main') || document.body;
+    main.insertBefore(section, main.firstChild);
+  }
+}
+
+function renderSearchResults(query) {
+  const resultsSection = document.getElementById('searchResults');
+  const grid = document.getElementById('searchResultsGrid');
+  const noResults = document.getElementById('searchNoResults');
+
+  if (!resultsSection || !grid || !noResults) return;
+  const q = (query || '').trim().toLowerCase();
+  if (!q) {
+    resultsSection.classList.add('hidden');
+    grid.innerHTML = '';
+    noResults.hidden = true;
+    return;
+  }
+
+  const all = getAllProducts();
+  const matches = all.filter(p => {
+    const text = `${p.title} ${p.brand || ''} ${p.id || ''} ${p.description || ''}`.toLowerCase();
+    return text.includes(q);
+  });
+
+  if (!matches.length) {
+    resultsSection.classList.remove('hidden');
+    grid.innerHTML = '';
+    noResults.hidden = false;
+    return;
+  }
+
+  noResults.hidden = true;
+  resultsSection.classList.remove('hidden');
+  grid.innerHTML = matches.map(p => {
+    const imageUrl = p.img || (p.variants && p.variants[0] && p.variants[0].img) || 'assets/hero-banner.jpg';
+    return `
+      <article class="product-card" data-id="${p.id}">
+        <div class="product-media clickable-image" data-img="${imageUrl}"><img src="${imageUrl}" alt="${p.title}" onerror="handleImgError(this,'${imageUrl}')"></div>
+        <div class="product-meta">
+          <div>
+            <div class="product-title">${p.title}</div>
+            <div class="product-desc">${truncate(p.description)}</div>
+          </div>
+          <div class="price">${format(p.price || 0)}</div>
+        </div>
+        <button class="btn btn-primary" data-add="${p.id}">Add to cart</button>
+      </article>
+    `;
+  }).join('');
+}
+
+function clearSearch() {
+  const input = document.getElementById('searchInput');
+  if (input) input.value = '';
+  renderSearchResults('');
+}
+
+function injectSearchBar() {
+  const headerBar = document.querySelector('.site-header .header-bar');
+  if (!headerBar || document.getElementById('searchInput')) return;
+
+  const searchWrapper = document.createElement('div');
+  searchWrapper.className = 'search-bar';
+  searchWrapper.innerHTML = `
+    <input id="searchInput" type="search" placeholder="Search products, brands, categories..." aria-label="Search products" autocomplete="off" />
+    <button id="searchClear" type="button" title="Clear search">✕</button>
+  `;
+
+  const cartBtn = headerBar.querySelector('.cart-btn');
+  if (cartBtn) headerBar.insertBefore(searchWrapper, cartBtn);
+  else headerBar.appendChild(searchWrapper);
+
+  const searchInput = document.getElementById('searchInput');
+  const searchClear = document.getElementById('searchClear');
+  if (searchInput) {
+    searchInput.addEventListener('input', e => renderSearchResults(e.target.value));
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Escape') clearSearch(); });
+  }
+  if (searchClear) searchClear.addEventListener('click', clearSearch);
+
+  createSearchSection();
+}
+
 // ---------- Init ----------
 loadCart();
 renderProducts();
 renderCart();
 renderCartPage();
+injectSearchBar();
 
 // Header controls: ensure logo navigates home and show logout when signed in
 function ensureHeaderControls() {
