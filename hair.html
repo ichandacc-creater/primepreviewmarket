@@ -2,22 +2,185 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Hair — Prime Preview</title>
+  <title>Hair — Prime Preview Market</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
+  <style>
+    .hair-hero {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(249, 115, 22, 0.08) 100%);
+      padding: 40px 20px;
+      text-align: center;
+      margin-bottom: 40px;
+      border-radius: 16px;
+      border: 1px solid rgba(245, 158, 11, 0.1);
+    }
+
+    .hair-hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin: 0 0 10px;
+      color: var(--text);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hair-hero p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      margin: 0;
+      font-style: italic;
+    }
+
+    .product-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .product-item {
+      background: var(--surface);
+      border: 1px solid rgba(245, 158, 11, 0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.08);
+    }
+
+    .product-item:hover {
+      transform: translateY(-6px);
+      border-color: rgba(245, 158, 11, 0.3);
+      box-shadow: 0 12px 32px rgba(245, 158, 11, 0.15);
+    }
+
+    .product-media {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(249, 115, 22, 0.05));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .product-media video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .play-btn {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(45, 27, 15, 0.4);
+      opacity: 0;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .product-item:hover .play-btn {
+      opacity: 1;
+    }
+
+    .play-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .product-info {
+      padding: 20px;
+      background: var(--surface);
+    }
+
+    .product-type {
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 8px;
+    }
+
+    .product-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 8px;
+    }
+
+    .product-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin: 0 0 12px;
+      line-height: 1.5;
+    }
+
+    .price-badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .video-icon {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .hair-hero {
+        padding: 24px 16px;
+        margin-bottom: 24px;
+      }
+
+      .hair-hero h1 {
+        font-size: 1.8rem;
+      }
+
+      .product-gallery {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+  </style>
 </head>
 
 <body data-category="hair">
   <header class="site-header">
     <div class="container header-bar">
-      <a class="brand" href="index.html">
-        <img src="assets/logo.png" alt="Prime Preview logo" class="logo">
-      </a>
+      <a class="brand" href="index.html">Prime Preview</a>
       <nav class="nav">
         <a href="phones.html">Phones</a>
         <a href="accessories.html">Accessories</a>
-        <a href="clothing&shoes.html">Clothing &amp; Shoes</a>
+        <a href="clothing-shoes.html">Clothing &amp; Shoes</a>
+        <a href="hair.html" class="is-active">Hair</a>
         <a href="jewelry.html">Jewelry</a>
         <a href="stanley-cups.html">Stanley Cups</a>
         <a href="consoles.html">Consoles</a>
@@ -32,54 +195,151 @@
     <ul class="mobile-nav-list">
       <li><a href="phones.html">Phones</a></li>
       <li><a href="accessories.html">Accessories</a></li>
-      <li><a href="clothing&shoes.html">Clothing &amp; Shoes</a></li>
+      <li><a href="clothing-shoes.html">Clothing &amp; Shoes</a></li>
+      <li><a href="hair.html" class="is-active">Hair 💇</a></li>
       <li><a href="jewelry.html">Jewelry</a></li>
       <li><a href="stanley-cups.html">Stanley Cups</a></li>
       <li><a href="consoles.html">Consoles</a></li>
       <li><a href="cart.html" class="badge">Cart <span data-cart-count>0</span></a></li>
     </ul>
-    <div id="mobileAuth" class="mobile-auth" style="margin-top:1rem;"></div>
   </nav>
 
   <main class="container">
-    <h1>Hair Products & Videos</h1>
-    <p style="margin-bottom:1rem;font-style:italic;">All prices are on inquiry &ndash; contact us for details.</p>
+    <div class="hair-hero">
+      <h1>💇 Premium Hair Products & Showcase</h1>
+      <p>Explore our exclusive collection of premium hair products and styling demonstrations. All prices are available on inquiry.</p>
+    </div>
 
-    <div class="video-gallery" style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
-      <!-- repeat for each available clip -->
-      <figure style="flex:1 1 300px;max-width:300px;text-align:center;">
-        <video controls style="max-width:100%;height:auto;border-radius:8px;" src="assets/hair/hair0.mp4"></video>
-        <figcaption style="margin-top:.5rem;color:var(--muted);">Price on inquiry</figcaption>
-      </figure>
-      <figure style="flex:1 1 300px;max-width:300px;text-align:center;">
-        <video controls style="max-width:100%;height:auto;border-radius:8px;" src="assets/hair/hair1.mp4"></video>
-        <figcaption style="margin-top:.5rem;color:var(--muted);">Price on inquiry</figcaption>
-      </figure>
-      <figure style="flex:1 1 300px;max-width:300px;text-align:center;">
-        <video controls style="max-width:100%;height:auto;border-radius:8px;" src="assets/hair/hair2.mp4"></video>
-        <figcaption style="margin-top:.5rem;color:var(--muted);">Price on inquiry</figcaption>
-      </figure>
-      <figure style="flex:1 1 300px;max-width:300px;text-align:center;">
-        <video controls style="max-width:100%;height:auto;border-radius:8px;" src="assets/hair/hair3.mp4"></video>
-        <figcaption style="margin-top:.5rem;color:var(--muted);">Price on inquiry</figcaption>
-      </figure>
-      <figure style="flex:1 1 300px;max-width:300px;text-align:center;">
-        <video controls style="max-width:100%;height:auto;border-radius:8px;" src="assets/hair/hair4.mp4"></video>
-        <figcaption style="margin-top:.5rem;color:var(--muted);">Price on inquiry</figcaption>
-      </figure>
-      <figure style="flex:1 1 300px;max-width:300px;text-align:center;">
-        <video controls style="max-width:100%;height:auto;border-radius:8px;" src="assets/hair/hair5.mp4"></video>
-        <figcaption style="margin-top:.5rem;color:var(--muted);">Price on inquiry</figcaption>
-      </figure>
+    <div class="product-gallery">
+      <!-- Hair Product 1 -->
+      <div class="product-item">
+        <div class="product-media">
+          <video controls style="width:100%;height:100%;object-fit:cover;"></video>
+          <div class="play-btn" onclick="this.parentElement.querySelector('video').play()">
+            <div class="play-icon">▶</div>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-type">Premium Collection</div>
+          <h3 class="product-title">
+            Hair Styling Video 1
+            <span class="video-icon">VIDEO</span>
+          </h3>
+          <p class="product-desc">Premium hair styling demonstration and product showcase.</p>
+          <span class="price-badge">Price on Inquiry</span>
+        </div>
+      </div>
+
+      <!-- Hair Product 2 -->
+      <div class="product-item">
+        <div class="product-media">
+          <video controls style="width:100%;height:100%;object-fit:cover;"></video>
+          <div class="play-btn" onclick="this.parentElement.querySelector('video').play()">
+            <div class="play-icon">▶</div>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-type">Premium Collection</div>
+          <h3 class="product-title">
+            Hair Styling Video 2
+            <span class="video-icon">VIDEO</span>
+          </h3>
+          <p class="product-desc">Professional styling techniques and hair care demonstrations.</p>
+          <span class="price-badge">Price on Inquiry</span>
+        </div>
+      </div>
+
+      <!-- Hair Product 3 -->
+      <div class="product-item">
+        <div class="product-media">
+          <video controls style="width:100%;height:100%;object-fit:cover;"></video>
+          <div class="play-btn" onclick="this.parentElement.querySelector('video').play()">
+            <div class="play-icon">▶</div>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-type">Premium Collection</div>
+          <h3 class="product-title">
+            Hair Styling Video 3
+            <span class="video-icon">VIDEO</span>
+          </h3>
+          <p class="product-desc">Advanced styling methods with premium hair care products.</p>
+          <span class="price-badge">Price on Inquiry</span>
+        </div>
+      </div>
+
+      <!-- Hair Product 4 -->
+      <div class="product-item">
+        <div class="product-media">
+          <video controls style="width:100%;height:100%;object-fit:cover;"></video>
+          <div class="play-btn" onclick="this.parentElement.querySelector('video').play()">
+            <div class="play-icon">▶</div>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-type">Premium Collection</div>
+          <h3 class="product-title">
+            Hair Styling Video 4
+            <span class="video-icon">VIDEO</span>
+          </h3>
+          <p class="product-desc">Transform your look with our expert hair styling guides.</p>
+          <span class="price-badge">Price on Inquiry</span>
+        </div>
+      </div>
+
+      <!-- Hair Product 5 -->
+      <div class="product-item">
+        <div class="product-media">
+          <video controls style="width:100%;height:100%;object-fit:cover;"></video>
+          <div class="play-btn" onclick="this.parentElement.querySelector('video').play()">
+            <div class="play-icon">▶</div>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-type">Premium Collection</div>
+          <h3 class="product-title">
+            Hair Styling Video 5
+            <span class="video-icon">VIDEO</span>
+          </h3>
+          <p class="product-desc">Exclusive hair treatment and maintenance demonstrations.</p>
+          <span class="price-badge">Price on Inquiry</span>
+        </div>
+      </div>
+
+      <!-- Hair Product 6 -->
+      <div class="product-item">
+        <div class="product-media">
+          <video controls style="width:100%;height:100%;object-fit:cover;"></video>
+          <div class="play-btn" onclick="this.parentElement.querySelector('video').play()">
+            <div class="play-icon">▶</div>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-type">Premium Collection</div>
+          <h3 class="product-title">
+            Hair Styling Video 6
+            <span class="video-icon">VIDEO</span>
+          </h3>
+          <p class="product-desc">Professional salon-quality results at home with our products.</p>
+          <span class="price-badge">Price on Inquiry</span>
+        </div>
+      </div>
     </div>
   </main>
 
   <div class="scrim" data-scrim hidden></div>
 
-  <footer class="site-footer">
-    <div class="container footer-bottom">
-      <small>© 2025 Prime Preview</small>
-    </div>
+  <footer style="text-align:center;padding:30px;background:rgba(245,158,11,0.05);border-top:1px solid rgba(245,158,11,0.1);margin-top:40px;">
+    <small style="color:var(--text-secondary);">© 2025 Prime Preview Market — Premium Hair Products & Styling</small>
   </footer>
+
+  <script src="app.js" defer></script>
+  <script>
+    // Populate video sources
+    document.querySelectorAll('.product-media video').forEach((video, index) => {
+      video.src = `assets/hair/hair${index}.mp4`;
+      video.type = 'video/mp4';
+    });
+  </script>
 </body>
 </html>

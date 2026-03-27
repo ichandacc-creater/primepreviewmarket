@@ -1,5 +1,21 @@
 // checkout.js
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCWezSfXRBRWyRMvoY88trhh8drG96n8AY",
+  authDomain: "prime-market.firebaseapp.com",
+  projectId: "prime-market",
+  storageBucket: "prime-market.firebasestorage.app",
+  messagingSenderId: "870687045642",
+  appId: "1:870687045642:web:d10c2313ab71971f5307f3",
+  measurementId: "G-EWLEJS331J"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 function format(n){ return `ZMW ${n.toFixed(2)}`; }
 
 const DELIVERY_FEE = 50;
@@ -102,6 +118,7 @@ async function processPayment() {
       province: document.getElementById('province').value,
       zipcode: document.getElementById('zipcode').value,
     },
+    deliveryAddress: document.getElementById('address').value,
     items: items,
     subtotal: subtotal,
     tax: tax,
@@ -111,16 +128,24 @@ async function processPayment() {
     status: 'pending'
   };
 
-  // Simulate payment processing
-  return new Promise((resolve) => {
+  // Simulate payment processing with Firestore save
+  return new Promise(async (resolve) => {
     // Add slight delay for realism
-    setTimeout(() => {
+    setTimeout(async () => {
       console.log('Processing payment...', orderData);
 
       // Save order to localStorage
       let orders = JSON.parse(localStorage.getItem('orders')) || [];
       orders.push(orderData);
       localStorage.setItem('orders', JSON.stringify(orders));
+
+      // Save order to Firestore for admin dashboard
+      try {
+        await addDoc(collection(db, 'orders'), orderData);
+        console.log('Order saved to Firestore:', orderData.orderId);
+      } catch (fireErr) {
+        console.warn('Could not sync order to Firestore', fireErr);
+      }
 
       // Clear cart
       localStorage.removeItem('cart');

@@ -91,8 +91,8 @@ const stanleyProducts = [
 ];
 
 const clothingProducts = [
-  { id:'shirt1', brand:'clothing&Shoes', title:'Prime Preview T‑Shirt', price: 1000, img:'assets/asics.jpg' },
-  { id:'hoodie1', brand:'clothing&Shoes', title:'Prime Hoodie', price: 1000, img:'assets/TN.jpg' },
+  { id:'shirt1', brand:'clothing-shoes', title:'Prime Preview T‑Shirt', price: 1000, img:'assets/asics.jpg' },
+  { id:'hoodie1', brand:'clothing-shoes', title:'Prime Hoodie', price: 1000, img:'assets/TN.jpg' },
 ];
 
 const accessoriesProducts = [
@@ -105,11 +105,11 @@ const jewelryProducts = [
   { id:'ring1', brand:'jewelry', title:'Silver Ring', price: 1200, img:'assets/1.jpg' },
 ];
 
-// Consoles category (sample products)
+// Consoles category with correct images
 const consolesProducts = [
-  { id:'ps5', brand:'console', title:'PlayStation 5', price: 13500, img:'assets/ps5 (1).jpeg', images: ['assets/ps5 (1).jpeg','assets/ps5 (2).jpeg'] },
-  { id:'xboxx', brand:'console', title:'Xbox Series X', price: 11000, img:'assets/xbox.jpg', images: ['assets/xbox.jpg','assets/xbox img2.jpg'] },
-  { id:'switch', brand:'console', title:'Nintendo Switch', price: 6000, img:'assets/nintendo.webp', images: ['assets/nintendo.webp','assets/switch.svg'] },
+  { id:'ps5', brand:'console', title:'PlayStation 5', price: 13500, img:'assets/ps5 (2).jpeg', images: ['assets/ps5 (2).jpeg', 'assets/ps5 (1).jpeg', 'assets/ps5.svg'] },
+  { id:'xboxx', brand:'console', title:'Xbox Series X', price: 11000, img:'assets/xbox.jpg', images: ['assets/xbox.jpg', 'assets/xbox img2.jpg', 'assets/xboxx.svg'] },
+  { id:'switch', brand:'console', title:'Nintendo Switch', price: 6000, img:'assets/switch.svg', images: ['assets/switch.svg', 'assets/nintendo.webp'] },
 ];
 
 // Expose consoles list globally so `auth/app.js` can reuse it
@@ -124,7 +124,12 @@ window.consolesProducts = consolesProducts;
 })();
 
 // ---------- State ----------
-const state = { cart: {}, filter: 'all' };
+const state = {
+  cart: {},
+  filter: 'all',
+  sort: 'price-asc',
+  searchTerm: '',
+};
 
 // Ensure an image modal exists on the page (inject for pages that don't include it)
 if (!document.getElementById('imageModal')) {
@@ -224,13 +229,37 @@ function showAccountModal() {
   if (!profile) {
     details.innerHTML = `<p class="muted">Not signed in. <a href="auth.html">Sign in</a> or create an account.</p>`;
   } else {
-    details.innerHTML = `
-      <p><strong>Name:</strong> ${profile.firstname || profile.businessname || profile.name || ''}</p>
-      <p><strong>Email:</strong> ${profile.email || ''}</p>
-      <p><strong>Phone:</strong> ${profile.phone || profile.businessphone || ''}</p>
-      <p><strong>Address:</strong> ${profile.address || profile.businessaddress || (profile.province ? profile.province + (profile.district ? ', ' + profile.district : '') : '')}</p>
-      <p><strong>Role:</strong> ${profile.role || profile.userRole || ''}</p>
+    const role = profile.userRole || profile.role || 'customer';
+    const common = `
+      <p><strong>Name:</strong> ${profile.firstname || profile.businessname || profile.name || 'N/A'}</p>
+      <p><strong>Email:</strong> ${profile.email || 'N/A'}</p>
+      <p><strong>Phone:</strong> ${profile.phone || profile.businessphone || 'N/A'}</p>
+      <p><strong>Country:</strong> ${profile.country || 'N/A'}</p>
+      <p><strong>Role:</strong> ${role}</p>
+      <p><strong>Status:</strong> ${profile.status || 'active'}</p>
     `;
+
+    const roleDetails = {
+      customer: `
+        <p><strong>Address:</strong> ${profile.address || 'N/A'}</p>
+        <p><strong>Province:</strong> ${profile.province || 'N/A'}</p>
+        <p><strong>District:</strong> ${profile.district || 'N/A'}</p>
+        <p><strong>Orders:</strong> ${profile.orderCount || 0}</p>
+      `,
+      supplier: `
+        <p><strong>Business:</strong> ${profile.businessname || 'N/A'}</p>
+        <p><strong>Type:</strong> ${profile.businesstype || 'N/A'}</p>
+        <p><strong>Address:</strong> ${profile.businessaddress || 'N/A'}</p>
+        <p><strong>Phone:</strong> ${profile.businessphone || 'N/A'}</p>
+        <p><strong>Tax ID:</strong> ${profile.taxid || 'N/A'}</p>
+        <p><strong>Products listed:</strong> ${profile.productCount || 0}</p>
+      `,
+      admin: `
+        <p><strong>Permissions:</strong> ${(profile.permissions || ['view_reports', 'view_users']).join(', ')}</p>
+      `
+    };
+
+    details.innerHTML = common + (roleDetails[role] || roleDetails.customer);
   }
   modal.removeAttribute('hidden'); document.body.style.overflow = 'hidden';
 }
@@ -263,18 +292,131 @@ function saveCart() {
 }
 
 // ---------- Render products ----------
+function getCategoryProducts(){
+  const category = document.body.getAttribute('data-category') || 'phones';
+  if (category === 'phones') return phoneProducts;
+  if (category === 'stanley') return stanleyProducts;
+  if (category === 'clothing') return clothingProducts;
+  if (category === 'accessories') return accessoriesProducts;
+  if (category === 'jewelry') return jewelryProducts;
+  if (category === 'consoles') return consolesProducts;
+  return phoneProducts;
+}
+
+function sortProducts(list){
+  if (!Array.isArray(list)) return list;
+  const sorted = [...list];
+  if (state.sort === 'price-asc') sorted.sort((a,b)=> (a.price||0)-(b.price||0));
+  if (state.sort === 'price-desc') sorted.sort((a,b)=> (b.price||0)-(a.price||0));
+  if (state.sort === 'name-a') sorted.sort((a,b)=> (a.title||'').localeCompare(b.title||''));
+  if (state.sort === 'name-z') sorted.sort((a,b)=> (b.title||'').localeCompare(a.title||''));
+  return sorted;
+}
+
+function filterProducts(list){
+  if (!Array.isArray(list)) return list;
+  let output = [...list];
+  if (state.filter && state.filter !== 'all') {
+    const key = state.filter.toLowerCase();
+    output = output.filter(p => {
+      const text = `${p.title} ${p.brand || ''} ${p.id || ''}`.toLowerCase();
+      return text.includes(key);
+    });
+  }
+  if (state.searchTerm) {
+    const q = state.searchTerm.toLowerCase();
+    output = output.filter(p => (`${p.title} ${p.brand || ''} ${p.description || ''}`).toLowerCase().includes(q));
+  }
+  return output;
+}
+
+function createProductControls(){
+  const grid = document.getElementById('productGrid');
+  if(!grid) return;
+  if(document.getElementById('productControls')) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.id = 'productControls';
+  wrapper.className = 'section-head';
+  wrapper.innerHTML = `
+    <div class="filters" style="align-items:center;gap:0.5rem;">
+      <button class="chip" data-filter="all">All</button>
+      <button class="chip" data-filter="apple">Apple</button>
+      <button class="chip" data-filter="stanley">Stanley</button>
+      <button class="chip" data-filter="accessory">Accessories</button>
+      <button class="chip" data-filter="clothing">Clothing</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:.6rem;">
+      <label for="sortProducts" style="color:var(--muted);font-size:.95rem;">Sort:</label>
+      <select id="sortProducts" class="chip" style="min-width:160px;">
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="name-a">Name: A to Z</option>
+        <option value="name-z">Name: Z to A</option>
+      </select>
+      <input id="productSearchInput" type="search" placeholder="Quick product search" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:.5rem .75rem;color:#fff;border-radius:8px;min-width:230px;" />
+    </div>
+  `;
+  grid.parentNode.insertBefore(wrapper, grid);
+
+  // setup events
+  wrapper.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      state.filter = e.target.dataset.filter;
+      wrapper.querySelectorAll('.chip').forEach(c => c.classList.toggle('is-active', c.dataset.filter === state.filter));
+      renderProducts();
+    });
+  });
+
+  const sortEl = document.getElementById('sortProducts');
+  sortEl && sortEl.addEventListener('change', (e) => {
+    state.sort = e.target.value;
+    renderProducts();
+  });
+
+  const searchEl = document.getElementById('productSearchInput');
+  searchEl && searchEl.addEventListener('input', (e) => {
+    state.searchTerm = e.target.value;
+    renderProducts();
+  });
+}
+
 function renderProducts(){
   if (!els.grid) return;
 
-  const category = document.body.getAttribute('data-category') || 'phones';
+  let list = getCategoryProducts();
 
-  let list = [];
-  if (category === 'phones') list = phoneProducts;
-  if (category === 'stanley') list = stanleyProducts;
-  if (category === 'clothing') list = clothingProducts;
-  if (category === 'accessories') list = accessoriesProducts;
-  if (category === 'jewelry') list = jewelryProducts;
-  if (category === 'consoles') list = consolesProducts;
+  if (!Array.isArray(list) || list.length === 0) {
+    // Fallback when selected category products are missing
+    const category = document.body.getAttribute('data-category') || 'unknown';
+    const msg = document.getElementById('productFallbackMessage');
+
+    if (!msg) {
+      const notice = document.createElement('p');
+      notice.id = 'productFallbackMessage';
+      notice.style.color = 'var(--muted)';
+      notice.style.margin = '1rem 0';
+      notice.textContent = `No products found for "${category}" yet. Showing all available items.`;
+      els.grid.parentNode.insertBefore(notice, els.grid);
+    } else {
+      msg.textContent = `No products found for "${category}" yet. Showing all available items.`;
+      msg.hidden = false;
+    }
+
+    list = getAllProducts();
+  } else {
+    const msg = document.getElementById('productFallbackMessage');
+    if (msg) msg.hidden = true;
+  }
+
+  list = filterProducts(list);
+  list = sortProducts(list);
+
+  const createLabel = p => {
+    if (p.price >= 14000) return '<span class="badge" style="background:#ef4444;color:#fff;">Top-tier</span>';
+    if (p.price >= 10000) return '<span class="badge" style="background:#22c55e;color:#fff;">Best value</span>';
+    return '<span class="badge" style="background:rgba(79,124,255,.25);color:#fff;">Standard</span>';
+  };
 
   els.grid.innerHTML = list.map(p => {
     // Special handling for Stanley Cup with variants
@@ -287,7 +429,7 @@ function renderProducts(){
               <div class="product-title">${p.title}</div>
               <div class="product-desc">${truncate(p.description)}</div>
             </div>
-            <div class="price">${format(p.price)}</div>
+            <div class="price">${format(p.price)} ${createLabel(p)}</div>
           </div>
           <label class="muted">Choose color:</label>
           <select data-color="${p.id}">
@@ -309,12 +451,113 @@ function renderProducts(){
             <div class="product-title">${p.title}</div>
             <div class="product-desc">${truncate(p.description)}</div>
           </div>
-          <div class="price">${format(p.price)}</div>
+          <div class="price">${format(p.price)} ${createLabel(p)}</div>
         </div>
         <button class="btn btn-primary" data-add="${p.id}">Add to cart</button>
       </article>
     `;
   }).join('');
+}
+
+// ---------- SPA Navigation ----------
+const categoryTitles = {
+  phones: 'Phones',
+  accessories: 'Accessories',
+  clothing: 'Clothing & Shoes',
+  hair: 'Hair',
+  stanley: 'Stanley Cups',
+  consoles: 'Consoles',
+  jewelry: 'Jewelry'
+};
+
+function navigateToCategory(category) {
+  // Update body data-category
+  document.body.setAttribute('data-category', category);
+  
+  // Update URL
+  const path = category === 'phones' ? '/' : `/${category}.html`;
+  history.pushState({ category }, '', path);
+  
+  // Update title
+  document.title = `${categoryTitles[category] || category} — Prime Preview`;
+  
+  // Update h1 if exists
+  const h1 = document.querySelector('main h1');
+  if (h1) h1.textContent = categoryTitles[category] || category;
+  
+  // Update active nav
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('is-active'));
+  const activeLink = document.querySelector(`.nav a[href*="${category}"]`);
+  if (activeLink) activeLink.classList.add('is-active');
+  
+  // Update mobile nav
+  document.querySelectorAll('.mobile-nav-list a').forEach(a => a.classList.remove('is-active'));
+  const mobileActive = document.querySelector(`.mobile-nav-list a[href*="${category}"]`);
+  if (mobileActive) mobileActive.classList.add('is-active');
+  
+  // Re-render products
+  renderProducts();
+  
+  // Scroll to top
+  window.scrollTo(0, 0);
+}
+
+function initSPA() {
+  // Intercept nav clicks
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('.nav a, .mobile-nav-list a');
+    if (!link || !link.href) return;
+    
+    const url = new URL(link.href, window.location.origin);
+    if (url.origin !== window.location.origin) return; // external link
+    
+    const path = url.pathname;
+    let category = 'phones';
+    if (path === '/' || path === '/index.html') category = 'phones';
+    else if (path.includes('phones')) category = 'phones';
+    else if (path.includes('accessories')) category = 'accessories';
+    else if (path.includes('clothing')) category = 'clothing';
+    else if (path.includes('hair')) category = 'hair';
+    else if (path.includes('stanley')) category = 'stanley';
+    else if (path.includes('consoles')) category = 'consoles';
+    else if (path.includes('jewelry')) category = 'jewelry';
+    else return; // not a category page
+    
+    e.preventDefault();
+    navigateToCategory(category);
+  });
+  
+  // Handle back/forward
+  window.addEventListener('popstate', (e) => {
+    if (e.state && e.state.category) {
+      navigateToCategory(e.state.category);
+    }
+  });
+  
+  // Set initial category from URL
+  const path = window.location.pathname;
+  let initialCategory = 'phones';
+  if (path.includes('phones')) initialCategory = 'phones';
+  else if (path.includes('accessories')) initialCategory = 'accessories';
+  else if (path.includes('clothing')) initialCategory = 'clothing';
+  else if (path.includes('hair')) initialCategory = 'hair';
+  else if (path.includes('stanley')) initialCategory = 'stanley';
+  else if (path.includes('consoles')) initialCategory = 'consoles';
+  else if (path.includes('jewelry')) initialCategory = 'jewelry';
+  
+  document.body.setAttribute('data-category', initialCategory);
+  document.title = `${categoryTitles[initialCategory]} — Prime Preview`;
+  const h1 = document.querySelector('main h1');
+  if (h1) h1.textContent = categoryTitles[initialCategory];
+  
+  // Update active nav
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('is-active'));
+  const activeLink = document.querySelector(`.nav a[href*="${initialCategory}"]`);
+  if (activeLink) activeLink.classList.add('is-active');
+  
+  document.querySelectorAll('.mobile-nav-list a').forEach(a => a.classList.remove('is-active'));
+  const mobileActive = document.querySelector(`.mobile-nav-list a[href*="${initialCategory}"]`);
+  if (mobileActive) mobileActive.classList.add('is-active');
 }
 
 // ---------- Render cart (drawer version) ----------
@@ -862,25 +1105,41 @@ function injectSearchBar() {
 
 // ---------- Init ----------
 loadCart();
+injectSearchBar();
+createProductControls();
 renderProducts();
 renderCart();
 renderCartPage();
-injectSearchBar();
+initSPA();
 
 // Header controls: ensure logo navigates home and show logout when signed in
 function ensureHeaderControls() {
   // Make all brand links go to the site home
   document.querySelectorAll('.brand').forEach(b => {
     try {
-      b.setAttribute('href', 'index.html');
-      b.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'index.html'; });
+      b.setAttribute('href', '/');
+      b.addEventListener('click', (e) => { e.preventDefault(); navigateToCategory('phones'); });
     } catch (e) { /* ignore */ }
   });
 
-  // Inject logout button if missing
+  // Inject logout and profile links if missing
   document.querySelectorAll('.site-header').forEach(header => {
-    if (header.querySelector('#headerLogoutBtn')) return;
     const nav = header.querySelector('.nav') || header;
+
+    if (!nav.querySelector('#headerProfileLink')) {
+      const profileLink = document.createElement('a');
+      profileLink.id = 'headerProfileLink';
+      profileLink.href = '#';
+      profileLink.dataset.account = '';
+      profileLink.textContent = 'Profile';
+      profileLink.style.marginLeft = '10px';
+      profileLink.style.color = 'var(--text)';
+      profileLink.style.fontWeight = '600';
+      profileLink.addEventListener('click', (e) => { e.preventDefault(); showAccountModal(); });
+      nav.appendChild(profileLink);
+    }
+
+    if (header.querySelector('#headerLogoutBtn')) return;
     const btn = document.createElement('button');
     btn.id = 'headerLogoutBtn';
     btn.className = 'btn btn-secondary';
@@ -888,11 +1147,9 @@ function ensureHeaderControls() {
     btn.style.marginLeft = '12px';
     btn.addEventListener('click', () => {
       localStorage.removeItem('currentUser');
-      // update UI then redirect to auth page
       updateHeaderLogoutVisibility();
       window.location.href = 'auth.html';
     });
-    // place after nav so it appears on the right
     nav && nav.parentNode ? nav.parentNode.insertBefore(btn, nav.nextSibling) : header.appendChild(btn);
   });
 
@@ -943,6 +1200,15 @@ document.addEventListener('DOMContentLoaded', () => {
   updateMobileAuth();
   // update visibility if localStorage changes in another tab
   window.addEventListener('storage', () => { updateHeaderLogoutVisibility(); updateMobileAuth(); });
+
+  // Register service worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      console.log('Service worker registered:', reg);
+    }).catch(err => {
+      console.log('Service worker registration failed:', err);
+    });
+  }
 
   // After returning from login/signup, resume pending action if any
   try {
