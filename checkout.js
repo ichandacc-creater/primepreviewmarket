@@ -1,4 +1,5 @@
 // checkout.js
+console.log('checkout.js loaded');
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -32,15 +33,17 @@ function calculateTotals() {
   const cart = getCart();
   const entries = Object.values(cart);
   const subtotal = entries.reduce((a, c) => a + c.qty * c.price, 0);
+  const deliveryMethod = document.querySelector('input[name="delivery"]:checked')?.value || 'delivery';
+  const deliveryFee = deliveryMethod === 'pickup' ? 0 : DELIVERY_FEE;
   const tax = subtotal * TAX_RATE;
-  const total = subtotal + tax + DELIVERY_FEE;
+  const total = subtotal + tax + deliveryFee;
 
-  return { subtotal, tax, total, items: entries };
+  return { subtotal, tax, total, items: entries, deliveryFee, deliveryMethod };
 }
 
 // Render order summary
 function renderOrderSummary() {
-  const { subtotal, tax, total, items } = calculateTotals();
+  const { subtotal, tax, total, items, deliveryFee } = calculateTotals();
 
   // Items list
   const summaryItems = document.getElementById('summaryItems');
@@ -57,24 +60,15 @@ function renderOrderSummary() {
 
   // Totals
   document.getElementById('summarySubtotal').textContent = format(subtotal);
+  document.getElementById('deliveryFee').textContent = format(deliveryFee);
   document.getElementById('summaryTax').textContent = format(tax);
   document.getElementById('summaryTotal').textContent = format(total);
 }
 
-// Payment method switching
-document.querySelectorAll('input[name="payment"]').forEach(radio => {
-  radio.addEventListener('change', (e) => {
-    // Hide all forms
-    document.querySelectorAll('.payment-form').forEach(form => {
-      form.style.display = 'none';
-    });
-
-    // Show selected form
-    const method = e.target.value;
-    if (method === 'airtel') document.getElementById('airtelForm').style.display = 'block';
-    if (method === 'mtn') document.getElementById('mtnForm').style.display = 'block';
-    if (method === 'dpo') document.getElementById('dpoForm').style.display = 'block';
-    if (method === 'card') document.getElementById('cardForm').style.display = 'block';
+// Delivery method switching
+document.querySelectorAll('input[name="delivery"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    renderOrderSummary();
   });
 });
 
@@ -103,7 +97,7 @@ function validateCheckoutForm() {
 // Process payment
 async function processPayment() {
   const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
-  const { subtotal, tax, total, items } = calculateTotals();
+  const { subtotal, tax, total, items, deliveryFee, deliveryMethod } = calculateTotals();
 
   const orderData = {
     orderId: generateOrderId(),
@@ -118,45 +112,22 @@ async function processPayment() {
       province: document.getElementById('province').value,
       zipcode: document.getElementById('zipcode').value,
     },
-    deliveryAddress: document.getElementById('address').value,
+    deliveryAddress: deliveryMethod === 'delivery' ? document.getElementById('address').value : 'Pick up in person',
+    deliveryMethod: deliveryMethod,
     items: items,
     subtotal: subtotal,
     tax: tax,
-    deliveryFee: DELIVERY_FEE,
+    deliveryFee: deliveryFee,
     total: total,
     paymentMethod: paymentMethod,
     status: 'pending'
   };
 
-  // Simulate payment processing with Firestore save
-  return new Promise(async (resolve) => {
-    // Add slight delay for realism
-    setTimeout(async () => {
-      console.log('Processing payment...', orderData);
+  // Show payment confirmation modal
+  showPaymentModal(orderData);
 
-      // Save order to localStorage
-      let orders = JSON.parse(localStorage.getItem('orders')) || [];
-      orders.push(orderData);
-      localStorage.setItem('orders', JSON.stringify(orders));
-
-      // Save order to Firestore for admin dashboard
-      try {
-        await addDoc(collection(db, 'orders'), orderData);
-        console.log('Order saved to Firestore:', orderData.orderId);
-      } catch (fireErr) {
-        console.warn('Could not sync order to Firestore', fireErr);
-      }
-
-      // Clear cart
-      localStorage.removeItem('cart');
-
-      resolve({
-        success: true,
-        orderId: orderData.orderId,
-        message: `Payment of ${format(total)} via ${getPaymentMethodName(paymentMethod)} processed successfully!`
-      });
-    }, 2000);
-  });
+  return { success: true, orderId: orderData.orderId, message: 'Order prepared. Please send payment.' };
+});
 }
 
 // Generate order ID
@@ -176,12 +147,34 @@ function getPaymentMethodName(method) {
   return names[method] || method;
 }
 
+// Show payment confirmation modal
+function showPaymentModal(orderData) {
+  document.getElementById('confirmOrderId').textContent = orderData.orderId;
+  document.getElementById('confirmAmount').textContent = format(orderData.total);
+  const modal = document.getElementById('paymentModal');
+  modal.removeAttribute('hidden');
+  document.querySelector('[data-scrim]').removeAttribute('hidden');
+  document.body.style.overflow = 'hidden';
+
+  // Store order data for later
+  window.pendingOrder = orderData;
+}
+
+// Close payment modal
+function closePaymentModal() {
+  const modal = document.getElementById('paymentModal');
+  modal.setAttribute('hidden', '');
+  document.querySelector('[data-scrim]').setAttribute('hidden', '');
+  document.body.style.overflow = '';
+}
+
 // Show success modal
 function showSuccessModal(orderId, message) {
   document.getElementById('orderId').textContent = orderId;
   document.getElementById('orderMessage').textContent = message;
   const modal = document.getElementById('successModal');
   modal.removeAttribute('hidden');
+  document.querySelector('[data-scrim]').removeAttribute('hidden');
   document.body.style.overflow = 'hidden';
 }
 
@@ -189,6 +182,7 @@ function showSuccessModal(orderId, message) {
 function closeSuccessModal() {
   const modal = document.getElementById('successModal');
   modal.setAttribute('hidden', '');
+  document.querySelector('[data-scrim]').setAttribute('hidden', '');
   document.body.style.overflow = '';
 }
 
@@ -220,7 +214,8 @@ document.getElementById('applyPromo').addEventListener('click', () => {
 });
 
 // Place order
-document.getElementById('placeOrderBtn').addEventListener('click', async () => {
+window.placeOrder = async () => {
+  alert('Place order clicked');
   if (!validateCheckoutForm()) return;
 
   const btn = document.getElementById('placeOrderBtn');
@@ -228,24 +223,54 @@ document.getElementById('placeOrderBtn').addEventListener('click', async () => {
   btn.textContent = 'Processing...';
 
   try {
-    const result = await processPayment();
-    
-    if (result.success) {
-      showSuccessModal(result.orderId, result.message);
-    }
+    await processPayment();
   } catch (error) {
-    alert('Error processing payment: ' + error.message);
+    alert('Error preparing order: ' + error.message);
   } finally {
     btn.disabled = false;
     btn.textContent = 'Place Order';
   }
-});
+};
 
 // Continue shopping after successful order
-document.getElementById('continueShoppingBtn').addEventListener('click', () => {
+window.continueShopping = () => {
   closeSuccessModal();
   window.location.href = 'phones.html';
-});
+};
+
+// Confirm payment sent
+window.confirmPaymentSent = async () => {
+  const orderData = window.pendingOrder;
+  if (!orderData) return;
+
+  // Save order to localStorage
+  let orders = JSON.parse(localStorage.getItem('orders')) || [];
+  orders.push(orderData);
+  localStorage.setItem('orders', JSON.stringify(orders));
+
+  // Save order to Firestore
+  try {
+    await addDoc(collection(db, 'orders'), orderData);
+    console.log('Order saved to Firestore:', orderData.orderId);
+  } catch (fireErr) {
+    console.warn('Could not sync order to Firestore', fireErr);
+  }
+
+  // Clear cart
+  localStorage.removeItem('cart');
+
+  closePaymentModal();
+  showSuccessModal(orderData.orderId, 'Your order is now pending confirmation.');
+};
+
+// Cancel order
+window.cancelOrder = () => {
+  // Clear pending order
+  delete window.pendingOrder;
+  closePaymentModal();
+  alert('Order cancelled.');
+  window.location.href = 'cart.html';
+};
 
 // Format card input
 document.getElementById('cardNumber').addEventListener('input', (e) => {
@@ -262,6 +287,7 @@ document.getElementById('cardExp').addEventListener('input', (e) => {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('checkout DOMContentLoaded');
   renderOrderSummary();
 
   // Check if cart is empty

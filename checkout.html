@@ -98,135 +98,49 @@
           </div>
         </div>
 
+        <!-- Delivery Method -->
+        <div class="form-section">
+          <h2>Delivery Method</h2>
+          <div class="delivery-methods">
+            <label class="delivery-option">
+              <input type="radio" name="delivery" value="delivery" checked>
+              <div class="delivery-card">
+                <div class="delivery-icon">🚚</div>
+                <div class="delivery-details">
+                  <strong>Delivery</strong>
+                  <p>Delivered to your address (ZMW 50.00)</p>
+                </div>
+              </div>
+            </label>
+
+            <label class="delivery-option">
+              <input type="radio" name="delivery" value="pickup">
+              <div class="delivery-card">
+                <div class="delivery-icon">🏪</div>
+                <div class="delivery-details">
+                  <strong>Pick Up In Person</strong>
+                  <p>Collect from our store (Free)</p>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
         <!-- Payment Method Selection -->
         <div class="form-section">
-          <h2>Select Payment Method</h2>
+          <h2>Payment Method</h2>
           
           <div class="payment-methods">
             <label class="payment-option">
-              <input type="radio" name="payment" value="airtel" checked>
-              <div class="payment-card">
-                <div class="payment-icon">📱</div>
-                <div class="payment-details">
-                  <strong>Airtel Money</strong>
-                  <p>Pay using your Airtel Money account</p>
-                </div>
-              </div>
-            </label>
-
-            <label class="payment-option">
-              <input type="radio" name="payment" value="mtn">
+              <input type="radio" name="payment" value="mtn" checked>
               <div class="payment-card">
                 <div class="payment-icon">💳</div>
                 <div class="payment-details">
-                  <strong>MTN Money</strong>
-                  <p>Pay using MTN Mobile Money</p>
+                  <strong>MTN Mobile Money</strong>
+                  <p>Send payment to +260765660047</p>
                 </div>
               </div>
             </label>
-
-            <label class="payment-option">
-              <input type="radio" name="payment" value="dpo">
-              <div class="payment-card">
-                <div class="payment-icon">🏦</div>
-                <div class="payment-details">
-                  <strong>DPO Payment</strong>
-                  <p>Bank card and digital payment gateway</p>
-                </div>
-              </div>
-            </label>
-
-            <label class="payment-option">
-              <input type="radio" name="payment" value="card">
-              <div class="payment-card">
-                <div class="payment-icon">💰</div>
-                <div class="payment-details">
-                  <strong>Credit/Debit Card</strong>
-                  <p>Visa, Mastercard, or other cards</p>
-                </div>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Airtel Money Form -->
-        <div class="payment-form" id="airtelForm" style="display: block;">
-          <h3>Airtel Money Payment</h3>
-          <div class="form-group">
-            <label for="airtelNumber">Airtel Money Number *</label>
-            <input type="tel" id="airtelNumber" placeholder="+260 76 XXXXXX" required>
-          </div>
-          <div class="form-group">
-            <label for="airtelPin">Airtel PIN *</label>
-            <input type="password" id="airtelPin" placeholder="Enter your PIN" required>
-          </div>
-          <div class="info-box">
-            <p>You will receive a prompt on your Airtel Money to confirm payment.</p>
-          </div>
-        </div>
-
-        <!-- MTN Money Form -->
-        <div class="payment-form" id="mtnForm" style="display: none;">
-          <h3>MTN Money Payment</h3>
-          <div class="form-group">
-            <label for="mtnNumber">MTN Number *</label>
-            <input type="tel" id="mtnNumber" placeholder="+260 97 XXXXXX" required>
-          </div>
-          <div class="form-group">
-            <label for="mtnPin">MTN PIN *</label>
-            <input type="password" id="mtnPin" placeholder="Enter your PIN" required>
-          </div>
-          <div class="info-box">
-            <p>You will receive a prompt on your MTN to confirm payment.</p>
-          </div>
-        </div>
-
-        <!-- DPO Form -->
-        <div class="payment-form" id="dpoForm" style="display: none;">
-          <h3>DPO Bank Transfer</h3>
-          <div class="form-group">
-            <label for="cardNumber">Card Number *</label>
-            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="expiry">Expiry Date *</label>
-              <input type="text" id="expiry" placeholder="MM/YY" required>
-            </div>
-            <div class="form-group">
-              <label for="cvv">CVV *</label>
-              <input type="text" id="cvv" placeholder="123" required maxlength="3">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="cardName">Cardholder Name *</label>
-            <input type="text" id="cardName" placeholder="John Doe" required>
-          </div>
-          <div class="info-box warning">
-            <p>⚠️ Your card information is secure and encrypted.</p>
-          </div>
-        </div>
-
-        <!-- Card Form -->
-        <div class="payment-form" id="cardForm" style="display: none;">
-          <h3>Credit/Debit Card</h3>
-          <div class="form-group">
-            <label for="cardNum">Card Number *</label>
-            <input type="text" id="cardNum" placeholder="1234 5678 9012 3456" required>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="cardExp">Expiry Date *</label>
-              <input type="text" id="cardExp" placeholder="MM/YY" required>
-            </div>
-            <div class="form-group">
-              <label for="cardCvv">CVV *</label>
-              <input type="text" id="cardCvv" placeholder="123" required maxlength="3">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="cardHolder">Cardholder Name *</label>
-            <input type="text" id="cardHolder" placeholder="John Doe" required>
           </div>
         </div>
 
@@ -239,7 +153,7 @@
         </div>
 
         <!-- Place Order Button -->
-        <button class="btn btn-primary btn-large" id="placeOrderBtn">Place Order</button>
+        <button class="btn btn-primary btn-large" id="placeOrderBtn" onclick="placeOrder()">Place Order</button>
       </div>
 
       <!-- Right side: Order Summary -->
@@ -281,14 +195,29 @@
     </div>
   </main>
 
+  <!-- Payment Confirmation Modal -->
+  <div class="modal" id="paymentModal" data-modal hidden>
+    <div class="modal-content modal-success">
+      <div class="success-icon">💳</div>
+      <h2>Payment Instructions</h2>
+      <p id="paymentMessage">Please send the payment amount to +260765660047 via MTN Mobile Money.</p>
+      <p class="order-id">Order ID: <strong id="confirmOrderId">ORD-2026-001</strong></p>
+      <p>Amount: <strong id="confirmAmount">ZMW 0.00</strong></p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="confirmSentBtn" onclick="confirmPaymentSent()">I Have Sent Payment</button>
+        <button class="btn btn-secondary" id="cancelOrderBtn" onclick="cancelOrder()">Cancel Order</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Success Modal -->
   <div class="modal" id="successModal" data-modal hidden>
     <div class="modal-content modal-success">
       <div class="success-icon">✓</div>
-      <h2>Order Placed Successfully!</h2>
-      <p id="orderMessage">Your order has been confirmed.</p>
+      <h2>Order Placed!</h2>
+      <p>Your order has been placed and is now pending confirmation.</p>
       <p class="order-id">Order ID: <strong id="orderId">ORD-2026-001</strong></p>
-      <button class="btn btn-primary" id="continueShoppingBtn">Continue Shopping</button>
+      <button class="btn btn-primary" id="continueShoppingBtn" onclick="continueShopping()">Continue Shopping</button>
     </div>
   </div>
 

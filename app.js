@@ -1110,7 +1110,7 @@ createProductControls();
 renderProducts();
 renderCart();
 renderCartPage();
-initSPA();
+// initSPA(); // Disabled for multi-page navigation
 
 // Header controls: ensure logo navigates home and show logout when signed in
 function ensureHeaderControls() {
